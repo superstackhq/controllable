@@ -1,7 +1,7 @@
 package one.superstack.controllable.controller;
 
 import jakarta.validation.Valid;
-import one.superstack.controllable.auth.AuthenticatedUserController;
+import one.superstack.controllable.auth.AuthenticatedController;
 import one.superstack.controllable.model.User;
 import one.superstack.controllable.request.AdminChangeRequest;
 import one.superstack.controllable.request.PasswordChangeRequest;
@@ -16,29 +16,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")
-public class UserController extends AuthenticatedUserController {
+public class Controller extends AuthenticatedController {
 
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public Controller(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping(value = "/users/me")
     public User get() throws Throwable {
-        return userService.get(getUserId());
+        return userService.get(getActorId());
     }
 
     @PutMapping(value = "/users/me/password")
     public User changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest) throws Throwable {
-        return userService.changePassword(getUserId(), passwordChangeRequest);
+        return userService.changePassword(getActorId(), passwordChangeRequest);
     }
 
     @PostMapping(value = "/users")
     public UserPasswordResponse add(@Valid @RequestBody UserAdditionRequest userAdditionRequest) {
-        checkAdmin();
-        return userService.add(userAdditionRequest, getUser());
+        checkFullAccess();
+        return userService.add(userAdditionRequest, getActor());
     }
 
     @GetMapping(value = "/users/{userId}")
@@ -48,19 +48,19 @@ public class UserController extends AuthenticatedUserController {
 
     @PutMapping(value = "/users/{userId}/admin")
     public User changeAdmin(@PathVariable String userId, @Valid @RequestBody AdminChangeRequest adminChangeRequest) throws Throwable {
-        checkAdmin();
+        checkFullAccess();
         return userService.changeAdmin(userId, adminChangeRequest, getOrganizationId());
     }
 
     @PutMapping(value = "/users/{userId}/password")
     public UserPasswordResponse resetPassword(@PathVariable String userId) throws Throwable {
-        checkAdmin();
+        checkFullAccess();
         return userService.resetPassword(userId, getOrganizationId());
     }
 
     @DeleteMapping(value = "/users/{userId}")
     public User delete(@PathVariable String userId) throws Throwable {
-        checkAdmin();
+        checkFullAccess();
         return userService.delete(userId, getOrganizationId());
     }
 

@@ -20,26 +20,26 @@ public class Jwt {
         this.jwtSecretKey = jwtSecretKey;
     }
 
-    public AuthenticatedUser getUser(String token) {
+    public AuthenticatedActor getActor(String token) {
         try {
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
             byte[] secretKeyBytes = DatatypeConverter.parseBase64Binary(jwtSecretKey);
             Key signingKey = new SecretKeySpec(secretKeyBytes, signatureAlgorithm.getJcaName());
 
-            return (AuthenticatedUser) Json.decode(
+            return (AuthenticatedActor) Json.decode(
                     Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody().getSubject(),
-                    AuthenticatedUser.class);
+                    AuthenticatedActor.class);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public String getUserToken(AuthenticatedUser user) {
+    public String getToken(AuthenticatedActor actor) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         byte[] secretKeyBytes = DatatypeConverter.parseBase64Binary(jwtSecretKey);
         Key signingKey = new SecretKeySpec(secretKeyBytes, signatureAlgorithm.getJcaName());
 
-        return Jwts.builder().setSubject(Json.encode(user))
+        return Jwts.builder().setSubject(Json.encode(actor))
                 .setIssuedAt(new Date())
                 .signWith(signatureAlgorithm, signingKey).compact();
     }

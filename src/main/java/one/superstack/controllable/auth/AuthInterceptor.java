@@ -3,6 +3,7 @@ package one.superstack.controllable.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import one.superstack.controllable.exception.InvalidTokenException;
+import one.superstack.controllable.service.ApiKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -13,32 +14,49 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private final Jwt jwt;
 
+    private final ApiKeyService apiKeyService;
+
     @Autowired
-    public AuthInterceptor(Jwt jwt) {
+    public AuthInterceptor(Jwt jwt, ApiKeyService apiKeyService) {
         this.jwt = jwt;
+        this.apiKeyService = apiKeyService;
     }
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof HandlerMethod) {
             Object handlerBean = ((HandlerMethod) handler).getBean();
 
-            if (handlerBean instanceof RequiresUserAuthentication) {
-                String jwtToken = extractToken(request);
+            if (handlerBean instanceof RequiresAuthentication) {
+                AuthorizationHeader header = extractAuthorizationData(request);
 
-                AuthenticatedUser user = jwt.getUser(jwtToken);
+                AuthenticatedActor actor;
 
-                if (null == user) {
-                    throw new InvalidTokenException();
+                switch (header.getType()) {
+                    case "Bearer" -> {
+                        String jwtToken = header.getContent();
+                        actor = jwt.getActor(jwtToken);
+                        if (null == actor) {
+                            throw new InvalidTokenException();
+                        }
+                    }
+
+                    case "ApiKey" -> {
+                        String apiKey = header.getContent();
+                        actor = apiKeyService.getByAccessKey(apiKey);
+                        ThreadLocalWrapper.setActor(actor);
+                    }
+
+                    default -> throw new InvalidTokenException();
                 }
 
-                ThreadLocalWrapper.setUser(user);
+                ThreadLocalWrapper.setActor(actor);
             }
         }
 
         return true;
     }
 
-    private String extractToken(HttpServletRequest request) {
+    private AuthorizationHeader extractAuthorizationData(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader == null) {
@@ -51,10 +69,11 @@ public class AuthInterceptor implements HandlerInterceptor {
             throw new InvalidTokenException();
         }
 
-        if (!authorizationComponents[0].equals("Bearer")) {
+        String tokenType = authorizationComponents[0];
+        if (!tokenType.equals("Bearer") && !tokenType.equals("ApiKey")) {
             throw new InvalidTokenException();
         }
 
-        return authorizationComponents[1];
+        return new AuthorizationHeader(tokenType, authorizationComponents[1]);
     }
 }

@@ -1,0 +1,113 @@
+package one.superstack.controllable.service;
+
+import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.enums.ActorType;
+import one.superstack.controllable.exception.ClientException;
+import one.superstack.controllable.exception.InvalidTokenException;
+import one.superstack.controllable.exception.NotFoundException;
+import one.superstack.controllable.model.ApiKey;
+import one.superstack.controllable.repository.ApiKeyRepository;
+import one.superstack.controllable.request.ApiKeyCreationRequest;
+import one.superstack.controllable.request.ApiKeyUpdateRequest;
+import one.superstack.controllable.request.FullAccessChangeRequest;
+import one.superstack.controllable.response.AccessKeyResponse;
+import one.superstack.controllable.util.Random;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.function.Supplier;
+
+@Service
+public class ApiKeyService {
+
+    private final ApiKeyRepository apiKeyRepository;
+
+    @Autowired
+    public ApiKeyService(ApiKeyRepository apiKeyRepository) {
+        this.apiKeyRepository = apiKeyRepository;
+    }
+
+    public ApiKey create(ApiKeyCreationRequest apiKeyCreationRequest, AuthenticatedActor creator) {
+        if (nameExists(apiKeyCreationRequest.getName(), creator.getOrganizationId())) {
+            throw new ClientException("API key " + apiKeyCreationRequest.getName() + " already exists");
+        }
+
+        ApiKey apiKey = new ApiKey(apiKeyCreationRequest.getName(),
+                apiKeyCreationRequest.getDescription(),
+                Random.generateRandomString(128),
+                apiKeyCreationRequest.getHasFullAccess(),
+                creator.getOrganizationId(),
+                creator.getType(),
+                creator.getId());
+
+        return apiKeyRepository.save(apiKey);
+    }
+
+    public List<ApiKey> list(String organizationId, Pageable pageable) {
+        return apiKeyRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    public ApiKey get(String apiKeyId, String organizationId) throws Throwable {
+        return apiKeyRepository.findByIdAndOrganizationId(apiKeyId, organizationId)
+                .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("API key not found"));
+    }
+
+    public ApiKey update(String apiKeyId, ApiKeyUpdateRequest apiKeyUpdateRequest, String organizationId) throws Throwable {
+        ApiKey apiKey = get(apiKeyId, organizationId);
+
+        if (null != apiKeyUpdateRequest.getName() && !apiKeyUpdateRequest.getName().isBlank()) {
+            if (apiKeyRepository.existsByIdNotAndNameAndOrganizationIdAndDeletedIsFalse(apiKeyId, apiKeyUpdateRequest.getName(), organizationId)) {
+                throw new ClientException("API key " + apiKeyUpdateRequest.getName() + " already exists");
+            }
+
+            apiKey.setName(apiKeyUpdateRequest.getName());
+        }
+
+        apiKey.setDescription(apiKeyUpdateRequest.getDescription());
+        apiKey.setModifiedOn(new Date());
+
+        return apiKeyRepository.save(apiKey);
+    }
+
+    public ApiKey changeFullAccess(String apiKeyId, FullAccessChangeRequest fullAccessChangeRequest, String organizationId) throws Throwable {
+        ApiKey apiKey = get(apiKeyId, organizationId);
+
+        apiKey.setHasFullAccess(fullAccessChangeRequest.getHasFullAccess());
+        apiKey.setModifiedOn(new Date());
+
+        return apiKeyRepository.save(apiKey);
+    }
+
+    public ApiKey resetAccessKey(String apiKeyId, String organizationId) throws Throwable {
+        ApiKey apiKey = get(apiKeyId, organizationId);
+
+        apiKey.setAccessKey(Random.generateRandomString(128));
+        apiKey.setModifiedOn(new Date());
+
+        return apiKeyRepository.save(apiKey);
+    }
+
+    public AccessKeyResponse getAccessKey(String apiKeyId, String organizationId) throws Throwable {
+        return new AccessKeyResponse(get(apiKeyId, organizationId).getAccessKey());
+    }
+
+    public ApiKey delete(String apiKeyId, String organizationId) throws Throwable {
+        ApiKey apiKey = get(apiKeyId, organizationId);
+        apiKeyRepository.delete(apiKey);
+        return apiKey;
+    }
+
+    public AuthenticatedActor getByAccessKey(String accessKey) throws Throwable {
+        ApiKey apiKey = apiKeyRepository.findByAccessKey(accessKey)
+                .orElseThrow((Supplier<Throwable>) InvalidTokenException::new);
+
+        return new AuthenticatedActor(ActorType.API_KEY, apiKey.getId(), apiKey.getOrganizationId(), apiKey.getHasFullAccess());
+    }
+
+    private Boolean nameExists(String name, String organizationId) {
+        return apiKeyRepository.existsByNameAndOrganizationIdAndDeletedIsFalse(name, organizationId);
+    }
+}

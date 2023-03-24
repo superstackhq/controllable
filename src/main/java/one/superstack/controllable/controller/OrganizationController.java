@@ -1,6 +1,6 @@
 package one.superstack.controllable.controller;
 
-import one.superstack.controllable.auth.AuthenticatedUserController;
+import one.superstack.controllable.auth.AuthenticatedController;
 import one.superstack.controllable.model.Organization;
 import one.superstack.controllable.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/v1")
-public class OrganizationController extends AuthenticatedUserController {
+public class OrganizationController extends AuthenticatedController {
 
     private final OrganizationService organizationService;
 

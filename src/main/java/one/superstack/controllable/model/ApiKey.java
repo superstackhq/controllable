@@ -2,25 +2,26 @@ package one.superstack.controllable.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import one.superstack.controllable.enums.ActorType;
-import one.superstack.controllable.util.Password;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Document(collection = "users")
-public class User implements Serializable {
+@Document(collection = "api_keys")
+public class ApiKey implements Serializable {
 
     @Id
     private String id;
 
-    private String username;
+    private String name;
+
+    private String description;
 
     @JsonIgnore
-    private String password;
+    private String accessKey;
 
-    private Boolean admin;
+    private Boolean hasFullAccess;
 
     private String organizationId;
 
@@ -32,16 +33,17 @@ public class User implements Serializable {
 
     private Date modifiedOn;
 
-    public User() {
+    public ApiKey() {
 
     }
 
-    public User(String username, String password, Boolean admin, String organizationId, ActorType creatorType, String creatorId) {
-        this.username = username;
-        this.password = Password.hash(password);
-        this.admin = admin;
-        this.organizationId = organizationId;
+    public ApiKey(String name, String description, String accessKey, Boolean hasFullAccess, String organizationId, ActorType creatorType, String creatorId) {
+        this.name = name;
+        this.description = description;
+        this.accessKey = accessKey;
+        this.hasFullAccess = hasFullAccess;
         this.creatorType = creatorType;
+        this.organizationId = organizationId;
         this.creatorId = creatorId;
         this.createdOn = new Date();
         this.modifiedOn = new Date();
@@ -55,36 +57,36 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPassword(String password) {
-        this.password = Password.hash(password);
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Boolean getAdmin() {
-        return admin;
+    public String getAccessKey() {
+        return accessKey;
     }
 
-    public void setAdmin(Boolean admin) {
-        this.admin = admin;
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
     }
 
-    public String getOrganizationId() {
-        return organizationId;
+    public Boolean getHasFullAccess() {
+        return hasFullAccess;
     }
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
+    public void setHasFullAccess(Boolean hasFullAccess) {
+        this.hasFullAccess = hasFullAccess;
     }
 
     public ActorType getCreatorType() {
@@ -97,6 +99,14 @@ public class User implements Serializable {
 
     public String getCreatorId() {
         return creatorId;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
     }
 
     public void setCreatorId(String creatorId) {

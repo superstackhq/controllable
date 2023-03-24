@@ -1,7 +1,8 @@
 package one.superstack.controllable.service;
 
-import one.superstack.controllable.auth.AuthenticatedUser;
+import one.superstack.controllable.auth.AuthenticatedActor;
 import one.superstack.controllable.auth.Jwt;
+import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.exception.AuthenticationException;
 import one.superstack.controllable.exception.ClientException;
 import one.superstack.controllable.exception.NotFoundException;
@@ -44,7 +45,7 @@ public class UserService {
 
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getPassword(),
-                true, null, null);
+                true, null, null, null);
         user = userRepository.save(user);
 
         Organization organization = organizationService.create(signUpRequest.getOrganizationName(), user.getId());
@@ -63,7 +64,7 @@ public class UserService {
             throw new AuthenticationException();
         }
 
-        return new AuthenticationResponse(jwt.getUserToken(new AuthenticatedUser(user.getId(), user.getOrganizationId(), user.getAdmin())));
+        return new AuthenticationResponse(jwt.getToken(new AuthenticatedActor(ActorType.USER, user.getId(), user.getOrganizationId(), user.getAdmin())));
     }
 
     public User get(String userId) throws Throwable {
@@ -80,14 +81,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserPasswordResponse add(UserAdditionRequest userAdditionRequest, AuthenticatedUser creator) {
+    public UserPasswordResponse add(UserAdditionRequest userAdditionRequest, AuthenticatedActor creator) {
         if (usernameExists(userAdditionRequest.getUsername(), creator.getOrganizationId())) {
             throw new ClientException("Username " + userAdditionRequest.getUsername() + " is already taken");
         }
 
         String password = Random.generateRandomString(16);
 
-        User user = new User(userAdditionRequest.getUsername(), password, userAdditionRequest.getAdmin(), creator.getOrganizationId(), creator.getId());
+        User user = new User(userAdditionRequest.getUsername(), password, userAdditionRequest.getAdmin(), creator.getOrganizationId(), creator.getType(), creator.getId());
         user = userRepository.save(user);
 
         return new UserPasswordResponse(password, user);

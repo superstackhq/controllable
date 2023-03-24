@@ -2,17 +2,17 @@ package one.superstack.controllable.auth;
 
 public class ThreadLocalWrapper {
 
-    private static final ThreadLocal<AuthenticatedUser> userContext;
+    private static final ThreadLocal<AuthenticatedActor> actorContext;
 
     static {
-        userContext = new ThreadLocal<>();
+        actorContext = new ThreadLocal<>();
     }
 
-    public static AuthenticatedUser getUser() {
-        return userContext.get();
+    public static AuthenticatedActor getActor() {
+        return actorContext.get();
     }
 
-    public static void setUser(AuthenticatedUser user) {
-        userContext.set(user);
+    public static void setActor(AuthenticatedActor actor) {
+        actorContext.set(actor);
     }
 }
