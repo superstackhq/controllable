@@ -25,9 +25,12 @@ public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
 
+    private final AccessService accessService;
+
     @Autowired
-    public ApiKeyService(ApiKeyRepository apiKeyRepository) {
+    public ApiKeyService(ApiKeyRepository apiKeyRepository, AccessService accessService) {
         this.apiKeyRepository = apiKeyRepository;
+        this.accessService = accessService;
     }
 
     public ApiKey create(ApiKeyCreationRequest apiKeyCreationRequest, AuthenticatedActor creator) {
@@ -59,7 +62,7 @@ public class ApiKeyService {
         ApiKey apiKey = get(apiKeyId, organizationId);
 
         if (null != apiKeyUpdateRequest.getName() && !apiKeyUpdateRequest.getName().isBlank()) {
-            if (apiKeyRepository.existsByIdNotAndNameAndOrganizationIdAndDeletedIsFalse(apiKeyId, apiKeyUpdateRequest.getName(), organizationId)) {
+            if (apiKeyRepository.existsByIdNotAndNameAndOrganizationId(apiKeyId, apiKeyUpdateRequest.getName(), organizationId)) {
                 throw new ClientException("API key " + apiKeyUpdateRequest.getName() + " already exists");
             }
 
@@ -97,6 +100,7 @@ public class ApiKeyService {
     public ApiKey delete(String apiKeyId, String organizationId) throws Throwable {
         ApiKey apiKey = get(apiKeyId, organizationId);
         apiKeyRepository.delete(apiKey);
+        accessService.deleteAllForActor(ActorType.API_KEY, apiKeyId);
         return apiKey;
     }
 
@@ -107,7 +111,11 @@ public class ApiKeyService {
         return new AuthenticatedActor(ActorType.API_KEY, apiKey.getId(), apiKey.getOrganizationId(), apiKey.getHasFullAccess());
     }
 
+    public Boolean exists(String apiKeyId, String organizationId) {
+        return apiKeyRepository.existsByIdAndOrganizationId(apiKeyId, organizationId);
+    }
+
     private Boolean nameExists(String name, String organizationId) {
-        return apiKeyRepository.existsByNameAndOrganizationIdAndDeletedIsFalse(name, organizationId);
+        return apiKeyRepository.existsByNameAndOrganizationId(name, organizationId);
     }
 }

@@ -1,7 +1,6 @@
 package one.superstack.controllable.repository;
 
 import one.superstack.controllable.model.ApiKey;
-import one.superstack.controllable.service.ApiKeyService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,9 @@ public interface ApiKeyRepository extends MongoRepository<ApiKey, String> {
 
     List<ApiKey> findByOrganizationId(String organizationId, Pageable pageable);
 
-    Boolean existsByNameAndOrganizationIdAndDeletedIsFalse(String name, String organizationId);
+    Boolean existsByNameAndOrganizationId(String name, String organizationId);
 
-    Boolean existsByIdNotAndNameAndOrganizationIdAndDeletedIsFalse(String id, String name, String organizationId);
+    Boolean existsByIdNotAndNameAndOrganizationId(String id, String name, String organizationId);
+
+    Boolean existsByIdAndOrganizationId(String id, String organizationId);
 }

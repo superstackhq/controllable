@@ -11,5 +11,5 @@ public interface OrganizationRepository extends MongoRepository<Organization, St
 
     Optional<Organization> findByName(String name);
 
-    Boolean existsByNameAndDeletedIsFalse(String name);
+    Boolean existsByName(String name);
 }

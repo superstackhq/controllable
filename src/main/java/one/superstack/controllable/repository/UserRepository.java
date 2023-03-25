@@ -17,5 +17,9 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     List<User> findByOrganizationId(String organizationId, Pageable pageable);
 
+    List<User> findByIdIn(List<String> ids);
+
     Boolean existsByUsernameAndOrganizationId(String username, String organizationId);
+
+    Boolean existsByIdAndOrganizationId(String id, String organizationId);
 }

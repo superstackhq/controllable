@@ -34,6 +34,6 @@ public class OrganizationService {
     }
 
     public Boolean nameExists(String name) {
-        return organizationRepository.existsByNameAndDeletedIsFalse(name);
+        return organizationRepository.existsByName(name);
     }
 }

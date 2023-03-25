@@ -29,12 +29,18 @@ public class UserService {
 
     private final OrganizationService organizationService;
 
+    private final GroupMemberService groupMemberService;
+
+    private final AccessService accessService;
+
     private final Jwt jwt;
 
     @Autowired
-    public UserService(UserRepository userRepository, OrganizationService organizationService, Jwt jwt) {
+    public UserService(UserRepository userRepository, OrganizationService organizationService, GroupMemberService groupMemberService, AccessService accessService, Jwt jwt) {
         this.userRepository = userRepository;
         this.organizationService = organizationService;
+        this.groupMemberService = groupMemberService;
+        this.accessService = accessService;
         this.jwt = jwt;
     }
 
@@ -70,6 +76,10 @@ public class UserService {
     public User get(String userId) throws Throwable {
         return userRepository.findById(userId)
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("User not found"));
+    }
+
+    public List<User> get(List<String> userIds) {
+        return userRepository.findByIdIn(userIds);
     }
 
     public User changePassword(String userId, PasswordChangeRequest passwordChangeRequest) throws Throwable {
@@ -121,11 +131,17 @@ public class UserService {
     public User delete(String userId, String organizationId) throws Throwable {
         User user = get(userId, organizationId);
         userRepository.delete(user);
+        groupMemberService.deleteAllForUser(userId);
+        accessService.deleteAllForActor(ActorType.USER, userId);
         return user;
     }
 
     public List<User> list(String organizationId, Pageable pageable) {
         return userRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    public Boolean exists(String userId, String organizationId) {
+        return userRepository.existsByIdAndOrganizationId(userId, organizationId);
     }
 
     private Boolean usernameExists(String username, String organizationId) {
