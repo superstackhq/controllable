@@ -3,6 +3,7 @@ package one.superstack.controllable.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import one.superstack.controllable.exception.InvalidTokenException;
+import one.superstack.controllable.exception.ServerException;
 import one.superstack.controllable.service.ApiKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                     case "ApiKey" -> {
                         String apiKey = header.getContent();
-                        actor = apiKeyService.getByAccessKey(apiKey);
+                        try {
+                            actor = apiKeyService.getByAccessKey(apiKey);
+                        } catch (Throwable e) {
+                            throw new ServerException(e.getMessage());
+                        }
                         ThreadLocalWrapper.setActor(actor);
                     }
 

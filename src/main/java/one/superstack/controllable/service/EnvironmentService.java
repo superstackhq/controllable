@@ -1,11 +1,92 @@
 package one.superstack.controllable.service;
 
+import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.enums.Permission;
+import one.superstack.controllable.enums.TargetType;
+import one.superstack.controllable.exception.ClientException;
+import one.superstack.controllable.exception.NotFoundException;
+import one.superstack.controllable.model.Environment;
+import one.superstack.controllable.repository.EnvironmentRepository;
+import one.superstack.controllable.request.AccessRequest;
+import one.superstack.controllable.request.EnvironmentCreationRequest;
+import one.superstack.controllable.request.EnvironmentUpdateRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 @Service
 public class EnvironmentService {
 
+    private final EnvironmentRepository environmentRepository;
+
+    private final AccessService accessService;
+
+    @Autowired
+    public EnvironmentService(EnvironmentRepository environmentRepository, AccessService accessService) {
+        this.environmentRepository = environmentRepository;
+        this.accessService = accessService;
+    }
+
+    public Environment create(EnvironmentCreationRequest environmentCreationRequest, AuthenticatedActor creator) {
+        if (nameExists(environmentCreationRequest.getName(), creator.getOrganizationId())) {
+            throw new ClientException("Environment " + environmentCreationRequest.getName() + " already exists");
+        }
+
+        Environment environment = new Environment(environmentCreationRequest.getName(),
+                environmentCreationRequest.getDescription(),
+                creator.getOrganizationId(),
+                creator.getType(),
+                creator.getId());
+
+        environment = environmentRepository.save(environment);
+        accessService.add(new AccessRequest(TargetType.ENVIRONMENT, environment.getId(), creator.getType(), creator.getId(), null, Set.of(Permission.ALL)), creator);
+        return environment;
+    }
+
+    public List<Environment> list(String organizationId, Pageable pageable) {
+        return environmentRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    public Environment get(String environmentId, String organizationId) throws Throwable {
+        return environmentRepository.findByIdAndOrganizationId(environmentId, organizationId)
+                .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Environment not found"));
+    }
+
+    public Environment update(String environmentId, EnvironmentUpdateRequest environmentUpdateRequest, String organizationId) throws Throwable {
+        Environment environment = get(environmentId, organizationId);
+
+        if (null != environmentUpdateRequest.getName() && !environmentUpdateRequest.getName().isBlank()) {
+            if (environmentRepository.existsByIdNotAndNameAndOrganizationId(environmentId, environmentUpdateRequest.getName(), organizationId)) {
+                throw new ClientException("Environment " + environmentUpdateRequest.getName() + " already exists");
+            }
+
+            environment.setName(environmentUpdateRequest.getName());
+        }
+
+        environment.setDescription(environmentUpdateRequest.getDescription());
+        environment.setModifiedOn(new Date());
+
+        return environmentRepository.save(environment);
+    }
+
+    public Environment delete(String environmentId, String organizationId) throws Throwable {
+        Environment environment = get(environmentId, organizationId);
+        environmentRepository.delete(environment);
+        accessService.deleteAllForEnvironment(environment.getId());
+        accessService.deleteAllForTarget(TargetType.ENVIRONMENT, environmentId);
+        return environment;
+    }
+
     public Boolean exists(String environmentId, String organizationId) {
-        return null;
+        return environmentRepository.existsByIdAndOrganizationId(environmentId, organizationId);
+    }
+
+    private Boolean nameExists(String name, String organizationId) {
+        return environmentRepository.existsByNameAndOrganizationId(name, organizationId);
     }
 }

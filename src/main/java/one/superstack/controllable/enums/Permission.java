@@ -2,5 +2,11 @@ package one.superstack.controllable.enums;
 
 public enum Permission {
 
-    ALL
+    ALL,
+
+    CREATE,
+
+    UPDATE,
+
+    DELETE
 }
