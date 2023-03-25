@@ -1,7 +1,10 @@
 package one.superstack.controllable.auth;
 
 import one.superstack.controllable.enums.ActorType;
+import one.superstack.controllable.enums.Permission;
+import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.exception.NotAllowedException;
+import one.superstack.controllable.service.AccessService;
 
 public class AuthenticatedController implements RequiresAuthentication {
 
@@ -27,6 +30,12 @@ public class AuthenticatedController implements RequiresAuthentication {
 
     public void checkFullAccess() {
         if (!hasFullAccess()) {
+            throw new NotAllowedException();
+        }
+    }
+
+    public void checkAccess(AccessService accessService, TargetType targetType, String targetId, Permission permission) {
+        if (!accessService.hasPermission(targetType, targetId, getActorType(), getActorId(), permission, hasFullAccess())) {
             throw new NotAllowedException();
         }
     }

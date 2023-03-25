@@ -8,5 +8,7 @@ public enum Permission {
 
     UPDATE,
 
-    DELETE
+    DELETE,
+
+    MANAGE_ACCESS_KEY
 }

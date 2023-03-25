@@ -32,10 +32,7 @@ public class EnvironmentController extends AuthenticatedController {
 
     @PostMapping(value = "/environments")
     public Environment create(@Valid @RequestBody EnvironmentCreationRequest environmentCreationRequest) {
-        if (!accessService.hasPermission(TargetType.ENVIRONMENT, null, getActorType(), getActorId(), Permission.CREATE, hasFullAccess())) {
-            throw new NotAllowedException();
-        }
-
+        checkAccess(accessService, TargetType.ENVIRONMENT, null, Permission.CREATE);
         return environmentService.create(environmentCreationRequest, getActor());
     }
 
@@ -51,19 +48,13 @@ public class EnvironmentController extends AuthenticatedController {
 
     @PutMapping(value = "/environments/{environmentId}")
     public Environment update(@PathVariable String environmentId, @Valid @RequestBody EnvironmentUpdateRequest environmentUpdateRequest) throws Throwable {
-        if (!accessService.hasPermission(TargetType.ENVIRONMENT, environmentId, getActorType(), getActorId(), Permission.UPDATE, hasFullAccess())) {
-            throw new NotAllowedException();
-        }
-
+        checkAccess(accessService, TargetType.ENVIRONMENT, environmentId, Permission.UPDATE);
         return environmentService.update(environmentId, environmentUpdateRequest, getOrganizationId());
     }
 
     @DeleteMapping(value = "/environments/{environmentId}")
     public Environment delete(@PathVariable String environmentId) throws Throwable {
-        if (!accessService.hasPermission(TargetType.ENVIRONMENT, environmentId, getActorType(), getActorId(), Permission.DELETE, hasFullAccess())) {
-            throw new NotAllowedException();
-        }
-
+        checkAccess(accessService, TargetType.ENVIRONMENT, environmentId, Permission.DELETE);
         return environmentService.delete(environmentId, getOrganizationId());
     }
 }

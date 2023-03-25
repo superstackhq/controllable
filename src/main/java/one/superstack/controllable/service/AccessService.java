@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -102,14 +103,17 @@ public class AccessService {
         return accessRepository.findByTargetTypeAndTargetIdAndActorTypeAndEnvironmentIdAndOrganizationId(targetType, targetId, actorType, environmentId, organizationId, pageable);
     }
 
+    @Async
     public void deleteAllForTarget(TargetType targetType, String targetId) {
         mongoTemplate.remove(Query.query(Criteria.where("targetType").is(targetType).and("targetId").is(targetId)));
     }
 
+    @Async
     public void deleteAllForActor(ActorType actorType, String actorId) {
         mongoTemplate.remove(Query.query(Criteria.where("actorType").is(actorType).and("actorId").is(actorId)));
     }
 
+    @Async
     public void deleteAllForEnvironment(String environmentId) {
         mongoTemplate.remove(Query.query(Criteria.where("environmentId").is(environmentId)));
     }
