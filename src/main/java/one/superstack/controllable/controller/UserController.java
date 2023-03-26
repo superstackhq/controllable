@@ -16,12 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")
-public class Controller extends AuthenticatedController {
+public class UserController extends AuthenticatedController {
 
     private final UserService userService;
 
     @Autowired
-    public Controller(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
