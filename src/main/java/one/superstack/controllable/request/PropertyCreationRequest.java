@@ -1,50 +1,33 @@
-package one.superstack.controllable.model;
+package one.superstack.controllable.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import one.superstack.controllable.embedded.Constraints;
 import one.superstack.controllable.embedded.SegmentTreeStructure;
-import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.DataType;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
-@Document(collection = "properties")
-public class Property implements Serializable {
-
-    @Id
-    private String id;
+public class PropertyCreationRequest implements Serializable {
 
     private List<String> namespace;
 
+    @NotBlank
     private String key;
 
     private String version;
 
     private String description;
 
+    @NotNull
     private DataType dataType;
 
     private SegmentTreeStructure segmentTreeStructure;
 
     private Constraints constraints;
 
-    private String organizationId;
-
-    private ActorType creatorType;
-
-    private String creatorId;
-
-    private Date createdOn;
-
-    private Date modifiedOn;
-
-    public Property() {
-    }
-
-    public Property(List<String> namespace, String key, String version, String description, DataType dataType, SegmentTreeStructure segmentTreeStructure, Constraints constraints, String organizationId, ActorType creatorType, String creatorId) {
+    public PropertyCreationRequest(List<String> namespace, String key, String version, String description, DataType dataType, SegmentTreeStructure segmentTreeStructure, Constraints constraints) {
         this.namespace = namespace;
         this.key = key;
         this.version = version;
@@ -52,19 +35,6 @@ public class Property implements Serializable {
         this.dataType = dataType;
         this.segmentTreeStructure = segmentTreeStructure;
         this.constraints = constraints;
-        this.organizationId = organizationId;
-        this.creatorType = creatorType;
-        this.creatorId = creatorId;
-        this.createdOn = new Date();
-        this.modifiedOn = new Date();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public List<String> getNamespace() {
@@ -121,45 +91,5 @@ public class Property implements Serializable {
 
     public void setConstraints(Constraints constraints) {
         this.constraints = constraints;
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public ActorType getCreatorType() {
-        return creatorType;
-    }
-
-    public void setCreatorType(ActorType creatorType) {
-        this.creatorType = creatorType;
-    }
-
-    public String getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Date getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public Date getModifiedOn() {
-        return modifiedOn;
-    }
-
-    public void setModifiedOn(Date modifiedOn) {
-        this.modifiedOn = modifiedOn;
     }
 }
