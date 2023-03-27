@@ -12,11 +12,13 @@ import one.superstack.controllable.request.EnvironmentCreationRequest;
 import one.superstack.controllable.request.EnvironmentUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -50,6 +52,15 @@ public class EnvironmentService {
 
     public List<Environment> list(String organizationId, Pageable pageable) {
         return environmentRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    @Async
+    public CompletableFuture<List<Environment>> asyncGet(List<String> environmentIds) {
+        return CompletableFuture.completedFuture(get(environmentIds));
+    }
+
+    public List<Environment> get(List<String> environmentIds) {
+        return environmentRepository.findByIdIn(environmentIds);
     }
 
     public Environment get(String environmentId, String organizationId) throws Throwable {

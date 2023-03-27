@@ -49,11 +49,11 @@ public class GroupMemberService {
     }
 
     public void deleteAllForGroup(String groupId) {
-        mongoTemplate.remove(Query.query(Criteria.where("groupId").is(groupId)));
+        mongoTemplate.remove(Query.query(Criteria.where("groupId").is(groupId)), GroupMember.class);
     }
 
     public void deleteAllForUser(String userId) {
-        mongoTemplate.remove(Query.query(Criteria.where("userId").is(userId)));
+        mongoTemplate.remove(Query.query(Criteria.where("userId").is(userId)), GroupMember.class);
     }
 
     public List<GroupMember> listGroups(String userId, Pageable pageable) {

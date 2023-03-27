@@ -13,11 +13,13 @@ import one.superstack.controllable.request.PropertyFetchRequest;
 import one.superstack.controllable.request.PropertyUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -29,11 +31,14 @@ public class PropertyService {
 
     private final NamespaceService namespaceService;
 
+    private final AppAccessService appAccessService;
+
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService) {
+    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService, AppAccessService appAccessService) {
         this.propertyRepository = propertyRepository;
         this.accessService = accessService;
         this.namespaceService = namespaceService;
+        this.appAccessService = appAccessService;
     }
 
     public Property create(PropertyCreationRequest propertyCreationRequest, AuthenticatedActor creator) {
@@ -78,6 +83,11 @@ public class PropertyService {
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Property not found"));
     }
 
+    @Async
+    public CompletableFuture<List<Property>> asyncGet(List<String> propertyIds) {
+        return CompletableFuture.completedFuture(get(propertyIds));
+    }
+
     public List<Property> get(List<String> propertyIds) {
         return propertyRepository.findByIdIn(propertyIds);
     }
@@ -93,6 +103,7 @@ public class PropertyService {
         Property property = get(propertyId, organizationId);
         propertyRepository.delete(property);
         accessService.deleteAllForTarget(TargetType.PROPERTY, propertyId);
+        appAccessService.deleteAllForTarget(TargetType.PROPERTY, propertyId);
         return property;
     }
 

@@ -15,6 +15,8 @@ public interface AppRepository extends MongoRepository<App, String> {
 
     List<App> findByOrganizationId(String organizationId, Pageable pageable);
 
+    List<App> findByIdIn(List<String> ids);
+
     Boolean existsByNameAndOrganizationId(String name, String organizationId);
 
     Boolean existsByIdNotAndNameAndOrganizationId(String id, String name, String organizationId);

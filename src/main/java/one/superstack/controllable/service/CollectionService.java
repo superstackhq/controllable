@@ -13,11 +13,13 @@ import one.superstack.controllable.request.CollectionCreationRequest;
 import one.superstack.controllable.request.CollectionUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -27,10 +29,13 @@ public class CollectionService {
 
     private final AccessService accessService;
 
+    private final AppAccessService appAccessService;
+
     @Autowired
-    public CollectionService(CollectionRepository collectionRepository, AccessService accessService) {
+    public CollectionService(CollectionRepository collectionRepository, AccessService accessService, AppAccessService appAccessService) {
         this.collectionRepository = collectionRepository;
         this.accessService = accessService;
+        this.appAccessService = appAccessService;
     }
 
     public Collection create(CollectionCreationRequest collectionCreationRequest, AuthenticatedActor creator) {
@@ -51,6 +56,11 @@ public class CollectionService {
 
     public List<Collection> list(String organizationId, Pageable pageable) {
         return collectionRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    @Async
+    public CompletableFuture<List<Collection>> asyncGet(List<String> collectionIds) {
+        return CompletableFuture.completedFuture(get(collectionIds));
     }
 
     public List<Collection> get(List<String> collectionIds) {
@@ -83,6 +93,7 @@ public class CollectionService {
         Collection collection = get(collectionId, organizationId);
         collectionRepository.delete(collection);
         accessService.deleteAllForTarget(TargetType.COLLECTION, collectionId);
+        appAccessService.deleteAllForTarget(TargetType.COLLECTION, collectionId);
         return collection;
     }
 

@@ -14,11 +14,13 @@ import one.superstack.controllable.response.AccessKeyResponse;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -28,10 +30,13 @@ public class AppService {
 
     private final AccessService accessService;
 
+    private final AppAccessService appAccessService;
+
     @Autowired
-    public AppService(AppRepository appRepository, AccessService accessService) {
+    public AppService(AppRepository appRepository, AccessService accessService, AppAccessService appAccessService) {
         this.appRepository = appRepository;
         this.accessService = accessService;
+        this.appAccessService = appAccessService;
     }
 
     public App create(AppCreationRequest appCreationRequest, AuthenticatedActor creator) {
@@ -55,6 +60,15 @@ public class AppService {
 
     public List<App> list(String organizationId, Pageable pageable) {
         return appRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    @Async
+    public CompletableFuture<List<App>> asyncGet(List<String> appIds) {
+        return CompletableFuture.completedFuture(get(appIds));
+    }
+
+    public List<App> get(List<String> appIds) {
+        return appRepository.findByIdIn(appIds);
     }
 
     public App get(String appId, String organizationId) throws Throwable {
@@ -83,6 +97,7 @@ public class AppService {
         App app = get(appId, organizationId);
         appRepository.delete(app);
         accessService.deleteAllForTarget(TargetType.APP, appId);
+        appAccessService.deleteAllForApp(appId);
         return app;
     }
 

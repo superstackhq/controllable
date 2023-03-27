@@ -15,6 +15,8 @@ public interface EnvironmentRepository extends MongoRepository<Environment, Stri
 
     List<Environment> findByOrganizationId(String organizationId, Pageable pageable);
 
+    List<Environment> findByIdIn(List<String> ids);
+
     Boolean existsByIdAndOrganizationId(String id, String organizationId);
 
     Boolean existsByNameAndOrganizationId(String name, String organizationId);

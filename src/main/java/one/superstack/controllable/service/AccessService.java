@@ -105,17 +105,17 @@ public class AccessService {
 
     @Async
     public void deleteAllForTarget(TargetType targetType, String targetId) {
-        mongoTemplate.remove(Query.query(Criteria.where("targetType").is(targetType).and("targetId").is(targetId)));
+        mongoTemplate.remove(Query.query(Criteria.where("targetType").is(targetType).and("targetId").is(targetId)), Access.class);
     }
 
     @Async
     public void deleteAllForActor(ActorType actorType, String actorId) {
-        mongoTemplate.remove(Query.query(Criteria.where("actorType").is(actorType).and("actorId").is(actorId)));
+        mongoTemplate.remove(Query.query(Criteria.where("actorType").is(actorType).and("actorId").is(actorId)), Access.class);
     }
 
     @Async
     public void deleteAllForEnvironment(String environmentId) {
-        mongoTemplate.remove(Query.query(Criteria.where("environmentId").is(environmentId)));
+        mongoTemplate.remove(Query.query(Criteria.where("environmentId").is(environmentId)), Access.class);
     }
 
     public Boolean hasPermission(TargetType targetType, String targetId, ActorType actorType, String actorId, Permission permission, Boolean hasFullAccess) {

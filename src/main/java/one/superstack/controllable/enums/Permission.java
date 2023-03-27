@@ -14,5 +14,11 @@ public enum Permission {
 
     MANAGE_COLLECTIONS,
 
-    MANAGE_MEMBERS
+    MANAGE_MEMBERS,
+
+    MANAGE_APP_ACCESS,
+
+    MANAGE_ACCESS,
+
+    MANAGE_TARGET_ACCESS
 }
