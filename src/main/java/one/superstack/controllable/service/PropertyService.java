@@ -97,6 +97,6 @@ public class PropertyService {
     }
 
     private Boolean keyVersionExists(List<String> namespace, String key, String version, String organizationId) {
-        return propertyRepository.existsByNamespaceAndParentAndKeyAndOrganizationId(namespace, key, version, organizationId);
+        return propertyRepository.existsByNamespaceAndKeyAndVersionAndOrganizationId(namespace, key, version, organizationId);
     }
 }

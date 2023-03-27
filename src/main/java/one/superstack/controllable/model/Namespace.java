@@ -13,7 +13,7 @@ public class Namespace implements Serializable {
     @Id
     private String id;
 
-    private List<String> deleted;
+    private List<String> parent;
 
     private String key;
 
@@ -27,8 +27,8 @@ public class Namespace implements Serializable {
 
     }
 
-    public Namespace(List<String> deleted, String key, String organizationId) {
-        this.deleted = deleted;
+    public Namespace(List<String> parent, String key, String organizationId) {
+        this.parent = parent;
         this.key = key;
         this.organizationId = organizationId;
         this.createdOn = new Date();
@@ -43,12 +43,12 @@ public class Namespace implements Serializable {
         this.id = id;
     }
 
-    public List<String> getDeleted() {
-        return deleted;
+    public List<String> getParent() {
+        return parent;
     }
 
-    public void setDeleted(List<String> deleted) {
-        this.deleted = deleted;
+    public void setParent(List<String> parent) {
+        this.parent = parent;
     }
 
     public String getKey() {
