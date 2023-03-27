@@ -20,5 +20,7 @@ public enum Permission {
 
     MANAGE_ACCESS,
 
-    MANAGE_TARGET_ACCESS
+    MANAGE_TARGET_ACCESS,
+
+    READ_VALUE
 }

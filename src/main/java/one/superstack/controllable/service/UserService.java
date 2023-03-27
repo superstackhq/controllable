@@ -16,10 +16,12 @@ import one.superstack.controllable.util.Password;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -76,6 +78,11 @@ public class UserService {
     public User get(String userId) throws Throwable {
         return userRepository.findById(userId)
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("User not found"));
+    }
+
+    @Async
+    public CompletableFuture<List<User>> asyncGet(List<String> userIds) {
+        return CompletableFuture.completedFuture(get(userIds));
     }
 
     public List<User> get(List<String> userIds) {

@@ -7,6 +7,7 @@ import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.model.Access;
 import one.superstack.controllable.request.AccessRequest;
 import one.superstack.controllable.request.DeleteAllAccessRequest;
+import one.superstack.controllable.response.AccessResponse;
 import one.superstack.controllable.response.SuccessResponse;
 import one.superstack.controllable.service.AccessControlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class AccessController extends AuthenticatedController {
     }
 
     @GetMapping(value = "/access")
-    public List<Access> list(@RequestParam TargetType targetType, @RequestParam String targetId, @RequestParam ActorType actorType, @RequestParam(required = false) String actorId, @RequestParam String environmentId, Pageable pageable) throws Throwable {
+    public List<AccessResponse> list(@RequestParam TargetType targetType, @RequestParam String targetId, @RequestParam ActorType actorType, @RequestParam(required = false) String actorId, @RequestParam String environmentId, Pageable pageable) throws Throwable {
         if (null == actorId || actorId.isBlank()) {
             return accessControlService.list(targetType, targetId, actorType, environmentId, getOrganizationId(), pageable);
         } else {

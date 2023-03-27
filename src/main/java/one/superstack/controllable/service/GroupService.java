@@ -13,10 +13,12 @@ import one.superstack.controllable.request.GroupMemberRequest;
 import one.superstack.controllable.request.GroupUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -61,9 +63,19 @@ public class GroupService {
         return get(groupIds);
     }
 
+    public Group get(String groupId) throws Throwable {
+        return groupRepository.findById(groupId)
+                .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Group not found"));
+    }
+
     public Group get(String groupId, String organizationId) throws Throwable {
         return groupRepository.findByIdAndOrganizationId(groupId, organizationId)
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Group not found"));
+    }
+
+    @Async
+    public CompletableFuture<List<Group>> asyncGet(List<String> groupIds) {
+        return CompletableFuture.completedFuture(get(groupIds));
     }
 
     public List<Group> get(List<String> groupIds) {

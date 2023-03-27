@@ -3,6 +3,7 @@ package one.superstack.controllable.model;
 import one.superstack.controllable.embedded.Rule;
 import one.superstack.controllable.embedded.Segment;
 import one.superstack.controllable.enums.ActorType;
+import one.superstack.controllable.enums.PropertyActorType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,7 +28,7 @@ public class PropertyValue implements Serializable {
 
     private String organizationId;
 
-    private ActorType creatorType;
+    private PropertyActorType creatorType;
 
     private String creatorId;
 
@@ -39,7 +40,7 @@ public class PropertyValue implements Serializable {
 
     }
 
-    public PropertyValue(String propertyId, String environmentId, Object value, Segment segment, Rule rule, String organizationId, ActorType creatorType, String creatorId) {
+    public PropertyValue(String propertyId, String environmentId, Object value, Segment segment, Rule rule, String organizationId, PropertyActorType creatorType, String creatorId) {
         this.propertyId = propertyId;
         this.environmentId = environmentId;
         this.value = value;
@@ -108,11 +109,11 @@ public class PropertyValue implements Serializable {
         this.organizationId = organizationId;
     }
 
-    public ActorType getCreatorType() {
+    public PropertyActorType getCreatorType() {
         return creatorType;
     }
 
-    public void setCreatorType(ActorType creatorType) {
+    public void setCreatorType(PropertyActorType creatorType) {
         this.creatorType = creatorType;
     }
 

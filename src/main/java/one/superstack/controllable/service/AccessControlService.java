@@ -5,13 +5,21 @@ import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.Access;
+import one.superstack.controllable.pojo.Actor;
+import one.superstack.controllable.pojo.ActorReference;
 import one.superstack.controllable.request.AccessRequest;
 import one.superstack.controllable.request.DeleteAllAccessRequest;
+import one.superstack.controllable.response.AccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class AccessControlService {
@@ -64,11 +72,25 @@ public class AccessControlService {
         return accessService.deleteAll(deleteAllAccessRequest, organizationId);
     }
 
-    public List<Access> list(TargetType targetType, String targetId, ActorType actorType, String environmentId, String organizationId, Pageable pageable) {
-        return accessService.list(targetType, targetId, actorType, environmentId, organizationId, pageable);
+    public List<AccessResponse> list(TargetType targetType, String targetId, ActorType actorType, String environmentId, String organizationId, Pageable pageable) throws ExecutionException, InterruptedException {
+        List<Access> accesses = accessService.list(targetType, targetId, actorType, environmentId, organizationId, pageable);
+
+        List<ActorReference> actorReferences = accesses.stream().map(access -> new ActorReference(access.getActorType(), access.getActorId())).collect(Collectors.toList());
+        Map<ActorReference, Actor> actorMap = actorService.fetch(actorReferences).stream().collect(Collectors.toMap(actor -> new ActorReference(actor.getType(), actor.getReferenceId()), actor -> actor, (a, b) -> b));
+
+        List<AccessResponse> accessResponses = new ArrayList<>();
+
+        for (Access access : accesses) {
+            accessResponses.add(new AccessResponse(access, actorMap.get(new ActorReference(access.getActorType(), access.getActorId()))));
+        }
+
+        return accessResponses;
     }
 
-    public List<Access> get(TargetType targetType, String targetId, ActorType actorType, String actorId, String environmentId, String orgnaizationId) throws Throwable {
-        return List.of(accessService.get(targetType, targetId, actorType, actorId, environmentId, orgnaizationId));
+    public List<AccessResponse> get(TargetType targetType, String targetId, ActorType actorType, String actorId, String environmentId, String organizationId) throws Throwable {
+        Access access = accessService.get(targetType, targetId, actorType, actorId, environmentId, organizationId);
+
+        Actor actor = actorService.get(new ActorReference(access.getActorType(), access.getId()));
+        return List.of(new AccessResponse(access, actor));
     }
 }

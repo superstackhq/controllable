@@ -14,10 +14,12 @@ import one.superstack.controllable.response.AccessKeyResponse;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -51,6 +53,19 @@ public class ApiKeyService {
 
     public List<ApiKey> list(String organizationId, Pageable pageable) {
         return apiKeyRepository.findByOrganizationId(organizationId, pageable);
+    }
+
+    @Async
+    public CompletableFuture<List<ApiKey>> asyncGet(List<String> apiKeyIds) {
+        return CompletableFuture.completedFuture(get(apiKeyIds));
+    }
+
+    public List<ApiKey> get(List<String> apiKeyIds) {
+        return apiKeyRepository.findByIdIn(apiKeyIds);
+    }
+
+    public ApiKey get(String apiKeyId) throws Throwable {
+        return apiKeyRepository.findById(apiKeyId).orElseThrow((Supplier<Throwable>) () -> new NotFoundException("API key not found"));
     }
 
     public ApiKey get(String apiKeyId, String organizationId) throws Throwable {

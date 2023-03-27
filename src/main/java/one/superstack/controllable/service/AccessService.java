@@ -76,7 +76,7 @@ public class AccessService {
 
     public void delete(AccessRequest accessRequest, String organizationId) {
         UpdateResult updateResult = mongoTemplate.updateFirst(Query.query(Criteria
-                        .where("actorType").is(accessRequest.getActorId())
+                        .where("actorType").is(accessRequest.getActorType())
                         .and("actorId").is(accessRequest.getActorId())
                         .and("targetType").is(accessRequest.getTargetType())
                         .and("targetId").is(accessRequest.getTargetId())

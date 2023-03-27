@@ -39,4 +39,10 @@ public class AuthenticatedController implements RequiresAuthentication {
             throw new NotAllowedException();
         }
     }
+
+    public void checkAccess(AccessService accessService, TargetType targetType, String targetId, String environmentId, Permission permission) {
+        if (!accessService.hasPermissionOnEnvironment(targetType, targetId, getActorType(), getActorId(), environmentId, permission, hasFullAccess())) {
+            throw new NotAllowedException();
+        }
+    }
 }
