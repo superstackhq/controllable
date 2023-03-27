@@ -10,5 +10,9 @@ public enum Permission {
 
     DELETE,
 
-    MANAGE_ACCESS_KEY
+    MANAGE_ACCESS_KEY,
+
+    MANAGE_COLLECTIONS,
+
+    MANAGE_MEMBERS
 }

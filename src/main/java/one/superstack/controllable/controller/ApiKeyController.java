@@ -49,7 +49,8 @@ public class ApiKeyController extends AuthenticatedController {
 
     @PutMapping(value = "/api-keys/{apiKeyId}/full-access")
     public ApiKey changeFullAccess(@PathVariable String apiKeyId, @Valid @RequestBody FullAccessChangeRequest fullAccessChangeRequest) throws Throwable {
-        checkFullAccess();;
+        checkFullAccess();
+        ;
         return apiKeyService.changeFullAccess(apiKeyId, fullAccessChangeRequest, getOrganizationId());
     }
 

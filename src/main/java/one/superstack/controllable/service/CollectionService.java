@@ -53,6 +53,10 @@ public class CollectionService {
         return collectionRepository.findByOrganizationId(organizationId, pageable);
     }
 
+    public List<Collection> get(List<String> collectionIds) {
+        return collectionRepository.findByIdIn(collectionIds);
+    }
+
     public Collection get(String collectionId, String organizationId) throws Throwable {
         return collectionRepository.findByIdAndOrganizationId(collectionId, organizationId)
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Collection not found"));

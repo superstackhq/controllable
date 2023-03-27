@@ -78,6 +78,10 @@ public class PropertyService {
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Property not found"));
     }
 
+    public List<Property> get(List<String> propertyIds) {
+        return propertyRepository.findByIdIn(propertyIds);
+    }
+
     public Property update(String propertyId, PropertyUpdateRequest propertyUpdateRequest, String organizationId) throws Throwable {
         Property property = get(propertyId, organizationId);
         property.setDescription(propertyUpdateRequest.getDescription());

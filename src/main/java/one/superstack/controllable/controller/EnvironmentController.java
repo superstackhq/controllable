@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import one.superstack.controllable.auth.AuthenticatedController;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;
-import one.superstack.controllable.exception.NotAllowedException;
 import one.superstack.controllable.model.Environment;
 import one.superstack.controllable.request.EnvironmentCreationRequest;
 import one.superstack.controllable.request.EnvironmentUpdateRequest;

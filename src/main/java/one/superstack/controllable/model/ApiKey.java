@@ -101,16 +101,16 @@ public class ApiKey implements Serializable {
         return creatorId;
     }
 
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public String getOrganizationId() {
         return organizationId;
     }
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
-    }
-
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
     }
 
     public Date getCreatedOn() {

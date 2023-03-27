@@ -15,6 +15,8 @@ public interface CollectionRepository extends MongoRepository<Collection, String
 
     List<Collection> findByOrganizationId(String organizationId, Pageable pageable);
 
+    List<Collection> findByIdIn(List<String> ids);
+
     Boolean existsByIdAndOrganizationId(String id, String organizationId);
 
     Boolean existsByNameAndOrganizationId(String name, String organizationId);

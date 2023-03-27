@@ -15,6 +15,8 @@ public interface PropertyRepository extends MongoRepository<Property, String> {
 
     List<Property> findByOrganizationId(String organizationId, Pageable pageable);
 
+    List<Property> findByIdIn(List<String> ids);
+
     List<Property> findByNamespaceAndOrganizationId(List<String> namespace, String organizationId, Pageable pageable);
 
     Boolean existsByNamespaceAndKeyAndVersionAndOrganizationId(List<String> namespace, String key, String version, String organizationId);
