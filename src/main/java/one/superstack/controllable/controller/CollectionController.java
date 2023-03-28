@@ -56,4 +56,9 @@ public class CollectionController extends AuthenticatedController {
         checkAccess(accessService, TargetType.COLLECTION, collectionId, Permission.DELETE);
         return collectionService.delete(collectionId, getOrganizationId());
     }
+
+    @GetMapping(value = "/collections/search")
+    public List<Collection> search(@RequestParam String query, Pageable pageable) {
+        return collectionService.search(query, getOrganizationId(), pageable);
+    }
 }

@@ -5,12 +5,17 @@ import one.superstack.controllable.embedded.Segment;
 import one.superstack.controllable.enums.ChangeType;
 import one.superstack.controllable.enums.PropertyActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "property_value_logs")
+@CompoundIndexes({
+        @CompoundIndex(name = "property_value_log_value_index", def = "{'propertyValueId': 1}")
+})
 public class PropertyValueLog implements Serializable {
 
     @Id

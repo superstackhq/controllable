@@ -2,7 +2,9 @@ package one.superstack.controllable.model;
 
 import one.superstack.controllable.enums.ActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +15,10 @@ public class Group implements Serializable {
     @Id
     private String id;
 
+    @TextIndexed
     private String name;
 
+    @TextIndexed
     private String description;
 
     private String organizationId;
@@ -26,6 +30,9 @@ public class Group implements Serializable {
     private Date createdOn;
 
     private Date modifiedOn;
+
+    @TextScore
+    private Float score;
 
     public Group() {
 
@@ -103,5 +110,13 @@ public class Group implements Serializable {
 
     public void setModifiedOn(Date modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
 }

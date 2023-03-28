@@ -3,6 +3,8 @@ package one.superstack.controllable.model;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -10,6 +12,10 @@ import java.util.Date;
 import java.util.Set;
 
 @Document(collection = "app_accesses")
+@CompoundIndexes({
+        @CompoundIndex(name = "app_access_mapping_index", def = "{'appId': 1, 'targetType': 1, 'targetId': 1}", unique = true),
+        @CompoundIndex(name = "app_access_target_index", def = "{'targetType': 1, 'targetId': 1}")
+})
 public class AppAccess implements Serializable {
 
 

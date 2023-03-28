@@ -4,6 +4,8 @@ import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -11,6 +13,9 @@ import java.util.Date;
 import java.util.Set;
 
 @Document(collection = "accesses")
+@CompoundIndexes({
+        @CompoundIndex(name = "access_mapping_index", def = "{'targetType': 1, 'targetId': 1, 'actorType': 1, 'actorId': 1, 'environmentId': 1}", unique = true)
+})
 public class Access implements Serializable {
 
     @Id

@@ -14,6 +14,7 @@ import one.superstack.controllable.response.AccessKeyResponse;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +31,13 @@ public class AppService {
 
     private final AccessService accessService;
 
-    private final AppAccessService appAccessService;
+    private final AppAccessGCService appAccessGCService;
 
     @Autowired
-    public AppService(AppRepository appRepository, AccessService accessService, AppAccessService appAccessService) {
+    public AppService(AppRepository appRepository, AccessService accessService, AppAccessGCService appAccessGCService) {
         this.appRepository = appRepository;
         this.accessService = accessService;
-        this.appAccessService = appAccessService;
+        this.appAccessGCService = appAccessGCService;
     }
 
     public App create(AppCreationRequest appCreationRequest, AuthenticatedActor creator) {
@@ -97,7 +98,7 @@ public class AppService {
         App app = get(appId, organizationId);
         appRepository.delete(app);
         accessService.deleteAllForTarget(TargetType.APP, appId);
-        appAccessService.deleteAllForApp(appId);
+        appAccessGCService.deleteAllForApp(appId);
         return app;
     }
 
@@ -116,6 +117,11 @@ public class AppService {
 
     public Boolean exists(String appId, String organizationId) {
         return appRepository.existsByIdAndOrganizationId(appId, organizationId);
+    }
+
+    public List<App> search(String query, String organizationId, Pageable pageable) {
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(query);
+        return appRepository.findByOrganizationIdOrderByScoreDesc(organizationId, textCriteria, pageable);
     }
 
     private Boolean nameExists(String name, String organizationId) {

@@ -5,6 +5,8 @@ import one.superstack.controllable.embedded.SegmentTreeStructure;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.DataType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -12,6 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 @Document(collection = "properties")
+@CompoundIndexes({
+        @CompoundIndex(name = "property_reference_index", def = "{'namespace': 1, 'key': 1, 'version': 1, 'organizationId': 1}", unique = true)
+})
 public class Property implements Serializable {
 
     @Id

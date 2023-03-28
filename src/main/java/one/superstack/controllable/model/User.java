@@ -4,17 +4,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.util.Password;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "users")
+@CompoundIndexes({
+        @CompoundIndex(name = "username_index", def = "{'username': 1, 'organizationId': 1}", unique = true)
+})
 public class User implements Serializable {
 
     @Id
     private String id;
 
+    @TextIndexed
     private String username;
 
     @JsonIgnore
@@ -31,6 +39,9 @@ public class User implements Serializable {
     private Date createdOn;
 
     private Date modifiedOn;
+
+    @TextScore
+    private Float score;
 
     public User() {
 
@@ -117,5 +128,13 @@ public class User implements Serializable {
 
     public void setModifiedOn(Date modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
 }

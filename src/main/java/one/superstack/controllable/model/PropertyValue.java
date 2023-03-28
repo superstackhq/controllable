@@ -2,15 +2,19 @@ package one.superstack.controllable.model;
 
 import one.superstack.controllable.embedded.Rule;
 import one.superstack.controllable.embedded.Segment;
-import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.PropertyActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "property_values")
+@CompoundIndexes({
+        @CompoundIndex(name = "property_values_segment_search_index", def = "{'propertyId': 1, 'environmentId': 1, 'segment.path.name': 1, 'segment.path.value': 1}")
+})
 public class PropertyValue implements Serializable {
 
     @Id

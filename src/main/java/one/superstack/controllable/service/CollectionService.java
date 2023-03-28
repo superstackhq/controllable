@@ -13,6 +13,7 @@ import one.superstack.controllable.request.CollectionCreationRequest;
 import one.superstack.controllable.request.CollectionUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,13 @@ public class CollectionService {
 
     private final AccessService accessService;
 
-    private final AppAccessService appAccessService;
+    private final AppAccessGCService appAccessGCService;
 
     @Autowired
-    public CollectionService(CollectionRepository collectionRepository, AccessService accessService, AppAccessService appAccessService) {
+    public CollectionService(CollectionRepository collectionRepository, AccessService accessService, AppAccessGCService appAccessGCService) {
         this.collectionRepository = collectionRepository;
         this.accessService = accessService;
-        this.appAccessService = appAccessService;
+        this.appAccessGCService = appAccessGCService;
     }
 
     public Collection create(CollectionCreationRequest collectionCreationRequest, AuthenticatedActor creator) {
@@ -93,12 +94,17 @@ public class CollectionService {
         Collection collection = get(collectionId, organizationId);
         collectionRepository.delete(collection);
         accessService.deleteAllForTarget(TargetType.COLLECTION, collectionId);
-        appAccessService.deleteAllForTarget(TargetType.COLLECTION, collectionId);
+        appAccessGCService.deleteAllForTarget(TargetType.COLLECTION, collectionId);
         return collection;
     }
 
     public Boolean exists(String collectionId, String organizationId) {
         return collectionRepository.existsByIdAndOrganizationId(collectionId, organizationId);
+    }
+
+    public List<Collection> search(String query, String organizationId, Pageable pageable) {
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(query);
+        return collectionRepository.findByOrganizationIdOrderByScoreDesc(organizationId, textCriteria, pageable);
     }
 
     private Boolean nameExists(String name, String organizationId) {

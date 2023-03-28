@@ -2,12 +2,18 @@ package one.superstack.controllable.model;
 
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.AffordanceType;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "collection_members")
+@CompoundIndexes({
+        @CompoundIndex(name = "collection_member_mapping_index", def = "{'collectionId': 1, 'affordanceType': 1, 'affordanceId': 1}", unique = true),
+        @CompoundIndex(name = "collection_member_affordance_index", def = "{'affordanceType': 1, 'affordanceId': 1}")
+})
 public class CollectionMember implements Serializable {
 
     private String id;
@@ -17,6 +23,8 @@ public class CollectionMember implements Serializable {
     private AffordanceType affordanceType;
 
     private String affordanceId;
+
+    private String organizationId;
 
     private ActorType creatorType;
 
@@ -29,10 +37,11 @@ public class CollectionMember implements Serializable {
     public CollectionMember() {
     }
 
-    public CollectionMember(String collectionId, AffordanceType affordanceType, String affordanceId, ActorType creatorType, String creatorId) {
+    public CollectionMember(String collectionId, AffordanceType affordanceType, String affordanceId, String organizationId, ActorType creatorType, String creatorId) {
         this.collectionId = collectionId;
         this.affordanceType = affordanceType;
         this.affordanceId = affordanceId;
+        this.organizationId = organizationId;
         this.creatorType = creatorType;
         this.creatorId = creatorId;
         this.createdOn = new Date();
@@ -69,6 +78,14 @@ public class CollectionMember implements Serializable {
 
     public void setAffordanceId(String affordanceId) {
         this.affordanceId = affordanceId;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
     }
 
     public ActorType getCreatorType() {

@@ -3,19 +3,28 @@ package one.superstack.controllable.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import one.superstack.controllable.enums.ActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "apps")
+@CompoundIndexes({
+        @CompoundIndex(name = "app_access_key_index", def = "{'accessKey': 1}",  unique = true)
+})
 public class App implements Serializable {
 
     @Id
     private String id;
 
+    @TextIndexed
     private String name;
 
+    @TextIndexed
     private String description;
 
     @JsonIgnore
@@ -30,6 +39,9 @@ public class App implements Serializable {
     private Date createdOn;
 
     private Date modifiedOn;
+
+    @TextScore
+    private Float score;
 
     public App() {
 
@@ -116,5 +128,13 @@ public class App implements Serializable {
 
     public void setModifiedOn(Date modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
 }

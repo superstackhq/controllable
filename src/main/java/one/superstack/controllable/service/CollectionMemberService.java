@@ -57,6 +57,7 @@ public class CollectionMemberService {
                         .setOnInsert("affordanceType", affordance.getType())
                         .setOnInsert("affordanceId", affordance.getReferenceId())
                         .setOnInsert("collectionId", collectionId)
+                        .setOnInsert("organizationId", creator.getOrganizationId())
                         .setOnInsert("creatorType", creator.getType())
                         .setOnInsert("creatorId", creator.getId())
                         .setOnInsert("createdOn", new Date())

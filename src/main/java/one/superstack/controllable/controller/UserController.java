@@ -68,4 +68,9 @@ public class UserController extends AuthenticatedController {
     public List<User> list(Pageable pageable) {
         return userService.list(getOrganizationId(), pageable);
     }
+
+    @GetMapping(value = "/users/search")
+    public List<User> search(@RequestParam String query, Pageable pageable) {
+        return userService.search(query, getOrganizationId(), pageable);
+    }
 }

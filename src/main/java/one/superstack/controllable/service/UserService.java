@@ -16,6 +16,7 @@ import one.superstack.controllable.util.Password;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -149,6 +150,11 @@ public class UserService {
 
     public Boolean exists(String userId, String organizationId) {
         return userRepository.existsByIdAndOrganizationId(userId, organizationId);
+    }
+
+    public List<User> search(String query, String organizationId, Pageable pageable) {
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(query);
+        return userRepository.findByOrganizationIdOrderByScoreDesc(organizationId, textCriteria, pageable);
     }
 
     private Boolean usernameExists(String username, String organizationId) {

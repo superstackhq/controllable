@@ -2,6 +2,7 @@ package one.superstack.controllable.repository;
 
 import one.superstack.controllable.model.Collection;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +23,6 @@ public interface CollectionRepository extends MongoRepository<Collection, String
     Boolean existsByNameAndOrganizationId(String name, String organizationId);
 
     Boolean existsByIdNotAndNameAndOrganizationId(String id, String name, String organizationId);
+
+    List<Collection> findByOrganizationIdOrderByScoreDesc(String organizationId, TextCriteria textCriteria, Pageable pageable);
 }

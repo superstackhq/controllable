@@ -2,12 +2,18 @@ package one.superstack.controllable.model;
 
 import one.superstack.controllable.enums.ActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "group_members")
+@CompoundIndexes({
+        @CompoundIndex(name = "group_member_mapping_index", def = "{'groupId': 1, 'userId': 1}", unique = true),
+        @CompoundIndex(name = "group_member_user_index", def = "{'userId': 1}")
+})
 public class GroupMember implements Serializable {
 
     @Id

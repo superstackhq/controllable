@@ -71,4 +71,9 @@ public class ApiKeyController extends AuthenticatedController {
         checkFullAccess();
         return apiKeyService.delete(apiKeyId, getOrganizationId());
     }
+
+    @GetMapping(value = "/api-keys/search")
+    public List<ApiKey> search(@RequestParam String query, Pageable pageable) {
+        return apiKeyService.search(query, getOrganizationId(), pageable);
+    }
 }

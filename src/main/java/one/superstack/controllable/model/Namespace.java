@@ -1,6 +1,8 @@
 package one.superstack.controllable.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -8,6 +10,9 @@ import java.util.Date;
 import java.util.List;
 
 @Document(collection = "namespaces")
+@CompoundIndexes({
+        @CompoundIndex(name = "namespace_reference_index", def = "{'parent': 1, 'key': 1, 'organizationId': 1}", unique = true)
+})
 public class Namespace implements Serializable {
 
     @Id

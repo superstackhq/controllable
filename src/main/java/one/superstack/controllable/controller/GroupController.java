@@ -81,4 +81,9 @@ public class GroupController extends AuthenticatedController {
     public List<User> listMembers(@PathVariable String groupId, Pageable pageable) {
         return groupService.listMembers(groupId, getOrganizationId(), pageable);
     }
+
+    @GetMapping(value = "/groups/search")
+    public List<Group> search(@RequestParam String query, Pageable pageable) {
+        return groupService.search(query, getOrganizationId(), pageable);
+    }
 }

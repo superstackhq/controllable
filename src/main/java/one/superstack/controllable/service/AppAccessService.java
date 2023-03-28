@@ -19,7 +19,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -99,16 +98,6 @@ public class AppAccessService {
         AppAccess appAccess = get(appId, deleteAllAppAccessRequest.getTargetType(), deleteAllAppAccessRequest.getTargetId(), organizationId);
         appAccessRepository.delete(appAccess);
         return appAccess;
-    }
-
-    @Async
-    public void deleteAllForApp(String appId) {
-        mongoTemplate.remove(Query.query(Criteria.where("appId").is(appId)), AppAccess.class);
-    }
-
-    @Async
-    public void deleteAllForTarget(TargetType targetType, String targetId) {
-        mongoTemplate.remove(Query.query(Criteria.where("targetType").is(targetType).and("targetId").is(targetId)), AppAccess.class);
     }
 
     public List<TargetResponse> listTargets(String appId, TargetType targetType, String organizationId, Pageable pageable) throws ExecutionException, InterruptedException {

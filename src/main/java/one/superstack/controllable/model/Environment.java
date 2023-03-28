@@ -2,12 +2,17 @@ package one.superstack.controllable.model;
 
 import one.superstack.controllable.enums.ActorType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Document(collection = "environments")
+@CompoundIndexes({
+        @CompoundIndex(name = "environment_name_index", def = "{'name': 1, 'organizationId': 1}", unique = true)
+})
 public class Environment implements Serializable {
 
     @Id

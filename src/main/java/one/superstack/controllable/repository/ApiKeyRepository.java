@@ -2,6 +2,7 @@ package one.superstack.controllable.repository;
 
 import one.superstack.controllable.model.ApiKey;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,4 +25,6 @@ public interface ApiKeyRepository extends MongoRepository<ApiKey, String> {
     Boolean existsByIdNotAndNameAndOrganizationId(String id, String name, String organizationId);
 
     Boolean existsByIdAndOrganizationId(String id, String organizationId);
+
+    List<ApiKey> findByOrganizationIdOrderByScoreDesc(String organizationId, TextCriteria textCriteria, Pageable pageable);
 }

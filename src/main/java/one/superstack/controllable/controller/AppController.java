@@ -69,4 +69,9 @@ public class AppController extends AuthenticatedController {
         checkAccess(accessService, TargetType.APP, appId, Permission.MANAGE_ACCESS_KEY);
         return appService.resetAccessKey(appId, getOrganizationId());
     }
+
+    @GetMapping(value = "/apps/search")
+    public List<App> search(@RequestParam String query, Pageable pageable) {
+        return appService.search(query, getOrganizationId(), pageable);
+    }
 }

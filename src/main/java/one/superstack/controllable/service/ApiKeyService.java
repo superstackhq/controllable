@@ -14,6 +14,7 @@ import one.superstack.controllable.response.AccessKeyResponse;
 import one.superstack.controllable.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -128,6 +129,11 @@ public class ApiKeyService {
 
     public Boolean exists(String apiKeyId, String organizationId) {
         return apiKeyRepository.existsByIdAndOrganizationId(apiKeyId, organizationId);
+    }
+
+    public List<ApiKey> search(String  query, String organizationId, Pageable pageable) {
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(query);
+        return apiKeyRepository.findByOrganizationIdOrderByScoreDesc(organizationId, textCriteria, pageable);
     }
 
     private Boolean nameExists(String name, String organizationId) {
