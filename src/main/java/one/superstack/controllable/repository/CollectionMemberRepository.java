@@ -14,4 +14,6 @@ public interface CollectionMemberRepository extends MongoRepository<CollectionMe
     List<CollectionMember> findByCollectionIdAndAffordanceTypeAndOrganizationId(String collectionId, AffordanceType affordanceType, String organizationId, Pageable pageable);
 
     List<CollectionMember> findByAffordanceTypeAndAffordanceIdAndOrganizationId(AffordanceType affordanceType, String affordanceId, String organizationId, Pageable pageable);
+
+    List<CollectionMember> findByAffordanceTypeAndAffordanceId(AffordanceType affordanceType, String affordanceId);
 }

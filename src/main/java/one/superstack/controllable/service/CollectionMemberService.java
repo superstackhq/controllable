@@ -95,4 +95,8 @@ public class CollectionMemberService {
         List<String> collectionIds = collectionMembers.stream().map(CollectionMember::getCollectionId).toList();
         return collectionService.get(collectionIds);
     }
+
+    public List<CollectionMember> listCollections(Affordance affordance) {
+        return collectionMemberRepository.findByAffordanceTypeAndAffordanceId(affordance.getType(), affordance.getReferenceId());
+    }
 }

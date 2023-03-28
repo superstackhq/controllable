@@ -8,6 +8,7 @@ import one.superstack.controllable.repository.PropertyValueLogRepository;
 import one.superstack.controllable.response.PropertyValueLogResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class PropertyValueLogService {
 
     public void log(List<PropertyValueLog> logs) {
         propertyValueLogRepository.saveAll(logs);
+    }
+
+    @Async
+    public void asyncLog(PropertyValueLog log) {
+        propertyValueLogRepository.save(log);
     }
 
     public void log(PropertyValueLog log) {

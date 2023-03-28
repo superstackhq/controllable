@@ -54,6 +54,6 @@ public class EnvironmentController extends AuthenticatedController {
     @DeleteMapping(value = "/environments/{environmentId}")
     public Environment delete(@PathVariable String environmentId) throws Throwable {
         checkAccess(accessService, TargetType.ENVIRONMENT, environmentId, Permission.DELETE);
-        return environmentService.delete(environmentId, getOrganizationId());
+        return environmentService.delete(environmentId, getActor());
     }
 }

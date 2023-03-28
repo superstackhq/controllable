@@ -33,12 +33,15 @@ public class PropertyService {
 
     private final AppAccessService appAccessService;
 
+    private final PropertyValueGCService propertyValueGCService;
+
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService, AppAccessService appAccessService) {
+    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService, AppAccessService appAccessService, PropertyValueGCService propertyValueGCService) {
         this.propertyRepository = propertyRepository;
         this.accessService = accessService;
         this.namespaceService = namespaceService;
         this.appAccessService = appAccessService;
+        this.propertyValueGCService = propertyValueGCService;
     }
 
     public Property create(PropertyCreationRequest propertyCreationRequest, AuthenticatedActor creator) {
@@ -99,11 +102,12 @@ public class PropertyService {
         return propertyRepository.save(property);
     }
 
-    public Property delete(String propertyId, String organizationId) throws Throwable {
-        Property property = get(propertyId, organizationId);
+    public Property delete(String propertyId, AuthenticatedActor actor) throws Throwable {
+        Property property = get(propertyId, actor.getOrganizationId());
         propertyRepository.delete(property);
         accessService.deleteAllForTarget(TargetType.PROPERTY, propertyId);
         appAccessService.deleteAllForTarget(TargetType.PROPERTY, propertyId);
+        propertyValueGCService.deleteAllForProperty(propertyId, actor);
         return property;
     }
 

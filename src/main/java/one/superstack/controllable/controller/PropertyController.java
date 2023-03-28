@@ -60,6 +60,6 @@ public class PropertyController extends AuthenticatedController {
     @DeleteMapping(value = "/properties/{propertyId}")
     public Property delete(@PathVariable String propertyId) throws Throwable {
         checkAccess(accessService, TargetType.PROPERTY, propertyId, Permission.DELETE);
-        return propertyService.delete(propertyId, getOrganizationId());
+        return propertyService.delete(propertyId, getActor());
     }
 }

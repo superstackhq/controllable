@@ -28,10 +28,13 @@ public class EnvironmentService {
 
     private final AccessService accessService;
 
+    private final PropertyValueGCService propertyValueGCService;
+
     @Autowired
-    public EnvironmentService(EnvironmentRepository environmentRepository, AccessService accessService) {
+    public EnvironmentService(EnvironmentRepository environmentRepository, AccessService accessService, PropertyValueGCService propertyValueGCService) {
         this.environmentRepository = environmentRepository;
         this.accessService = accessService;
+        this.propertyValueGCService = propertyValueGCService;
     }
 
     public Environment create(EnvironmentCreationRequest environmentCreationRequest, AuthenticatedActor creator) {
@@ -85,11 +88,12 @@ public class EnvironmentService {
         return environmentRepository.save(environment);
     }
 
-    public Environment delete(String environmentId, String organizationId) throws Throwable {
-        Environment environment = get(environmentId, organizationId);
+    public Environment delete(String environmentId, AuthenticatedActor actor) throws Throwable {
+        Environment environment = get(environmentId, actor.getOrganizationId());
         environmentRepository.delete(environment);
         accessService.deleteAllForEnvironment(environment.getId());
         accessService.deleteAllForTarget(TargetType.ENVIRONMENT, environmentId);
+        propertyValueGCService.deleteAllForEnvironment(environmentId, actor);
         return environment;
     }
 

@@ -12,7 +12,5 @@ public enum DataType {
 
     FLOAT,
 
-    BOOLEAN,
-
-    NULL
+    BOOLEAN
 }

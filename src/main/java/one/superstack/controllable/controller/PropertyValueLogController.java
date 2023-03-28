@@ -33,13 +33,13 @@ public class PropertyValueLogController extends AuthenticatedController {
 
     @GetMapping(value = "/logs")
     public List<PropertyValueLogResponse> list(@PathVariable String environmentId, @PathVariable String propertyId, @PathVariable String valueId, Pageable pageable) throws ExecutionException, InterruptedException {
-        checkAccess(accessService, TargetType.PROPERTY, propertyId, environmentId, Permission.READ_VALUE);
+        checkAccess(accessService, TargetType.PROPERTY, propertyId, environmentId, Permission.READ_PROPERTY_VALUE);
         return propertyValueLogService.list(valueId, propertyId, environmentId, getOrganizationId(), pageable);
     }
 
     @GetMapping(value = "/logs/{logId}")
     public PropertyValueLog get(@PathVariable String environmentId, @PathVariable String propertyId, @PathVariable String valueId, @PathVariable String logId) throws Throwable {
-        checkAccess(accessService, TargetType.PROPERTY, propertyId, environmentId, Permission.READ_VALUE);
+        checkAccess(accessService, TargetType.PROPERTY, propertyId, environmentId, Permission.READ_PROPERTY_VALUE);
         return propertyValueLogService.get(logId, valueId, propertyId, environmentId, getOrganizationId());
     }
 }
