@@ -1,6 +1,6 @@
 package one.superstack.controllable.service;
 
-import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.ChangeType;
 import one.superstack.controllable.model.PropertyValue;
 import one.superstack.controllable.model.PropertyValueLog;

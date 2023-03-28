@@ -1,8 +1,7 @@
 package one.superstack.controllable.service;
 
 import jakarta.validation.Valid;
-import one.superstack.controllable.auth.AuthenticatedActor;
-import one.superstack.controllable.embedded.Segment;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.ChangeType;
 import one.superstack.controllable.exception.ClientException;
 import one.superstack.controllable.exception.NotFoundException;

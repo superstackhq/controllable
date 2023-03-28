@@ -1,7 +1,7 @@
 package one.superstack.controllable.controller;
 
 import jakarta.validation.Valid;
-import one.superstack.controllable.auth.AuthenticatedController;
+import one.superstack.controllable.auth.actor.AuthenticatedController;
 import one.superstack.controllable.model.Namespace;
 import one.superstack.controllable.request.NamespaceFetchRequest;
 import one.superstack.controllable.service.NamespaceService;

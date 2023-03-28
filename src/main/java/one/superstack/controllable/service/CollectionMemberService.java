@@ -1,7 +1,7 @@
 package one.superstack.controllable.service;
 
 import com.mongodb.client.result.DeleteResult;
-import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.AffordanceType;
 import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.Collection;

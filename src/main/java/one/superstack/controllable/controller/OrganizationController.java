@@ -1,6 +1,6 @@
 package one.superstack.controllable.controller;
 
-import one.superstack.controllable.auth.AuthenticatedController;
+import one.superstack.controllable.auth.actor.AuthenticatedController;
 import one.superstack.controllable.model.Organization;
 import one.superstack.controllable.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;

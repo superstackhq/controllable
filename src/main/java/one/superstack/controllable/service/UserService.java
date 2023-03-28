@@ -1,7 +1,7 @@
 package one.superstack.controllable.service;
 
-import one.superstack.controllable.auth.AuthenticatedActor;
-import one.superstack.controllable.auth.Jwt;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.Jwt;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.exception.AuthenticationException;
 import one.superstack.controllable.exception.ClientException;

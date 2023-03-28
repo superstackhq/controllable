@@ -1,7 +1,7 @@
 package one.superstack.controllable.service;
 
 import com.mongodb.client.result.UpdateResult;
-import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;

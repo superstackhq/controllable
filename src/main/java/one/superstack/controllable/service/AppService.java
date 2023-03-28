@@ -1,9 +1,11 @@
 package one.superstack.controllable.service;
 
-import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
+import one.superstack.controllable.auth.app.AuthenticatedApp;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.exception.ClientException;
+import one.superstack.controllable.exception.InvalidTokenException;
 import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.App;
 import one.superstack.controllable.repository.AppRepository;
@@ -122,6 +124,11 @@ public class AppService {
     public List<App> search(String query, String organizationId, Pageable pageable) {
         TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(query);
         return appRepository.findByOrganizationIdOrderByScoreDesc(organizationId, textCriteria, pageable);
+    }
+
+    public AuthenticatedApp getByAccessKey(String accessKey) throws Throwable {
+        App app = appRepository.findByAccessKey(accessKey).orElseThrow((Supplier<Throwable>) InvalidTokenException::new);
+        return new AuthenticatedApp(app.getId(), app.getOrganizationId());
     }
 
     private Boolean nameExists(String name, String organizationId) {

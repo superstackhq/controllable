@@ -25,4 +25,6 @@ public interface AppRepository extends MongoRepository<App, String> {
     Boolean existsByIdAndOrganizationId(String id, String organizationId);
 
     List<App> findByOrganizationIdOrderByScoreDesc(String organizationId, TextCriteria textCriteria, Pageable pageable);
+
+    Optional<App> findByAccessKey(String accessKey);
 }

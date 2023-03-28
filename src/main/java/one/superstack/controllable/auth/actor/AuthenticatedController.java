@@ -1,4 +1,4 @@
-package one.superstack.controllable.auth;
+package one.superstack.controllable.auth.actor;
 
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.Permission;

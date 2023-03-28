@@ -1,6 +1,6 @@
 package one.superstack.controllable.service;
 
-import one.superstack.controllable.auth.AuthenticatedActor;
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.ActorType;
 import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.exception.NotFoundException;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;

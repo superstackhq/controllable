@@ -1,4 +1,4 @@
-package one.superstack.controllable.auth;
+package one.superstack.controllable.auth.actor;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

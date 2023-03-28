@@ -1,6 +1,6 @@
 package one.superstack.controllable.controller;
 
-import one.superstack.controllable.auth.AuthenticatedController;
+import one.superstack.controllable.auth.actor.AuthenticatedController;
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.model.PropertyValueLog;

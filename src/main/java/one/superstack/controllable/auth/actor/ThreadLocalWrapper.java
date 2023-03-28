@@ -1,4 +1,4 @@
-package one.superstack.controllable.auth;
+package one.superstack.controllable.auth.actor;
 
 public class ThreadLocalWrapper {
 

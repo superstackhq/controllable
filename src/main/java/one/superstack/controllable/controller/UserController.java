@@ -1,7 +1,7 @@
 package one.superstack.controllable.controller;
 
 import jakarta.validation.Valid;
-import one.superstack.controllable.auth.AuthenticatedController;
+import one.superstack.controllable.auth.actor.AuthenticatedController;
 import one.superstack.controllable.model.User;
 import one.superstack.controllable.request.AdminChangeRequest;
 import one.superstack.controllable.request.PasswordChangeRequest;
