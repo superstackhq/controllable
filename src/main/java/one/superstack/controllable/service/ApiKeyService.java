@@ -100,13 +100,14 @@ public class ApiKeyService {
         return apiKeyRepository.save(apiKey);
     }
 
-    public ApiKey resetAccessKey(String apiKeyId, String organizationId) throws Throwable {
+    public AccessKeyResponse resetAccessKey(String apiKeyId, String organizationId) throws Throwable {
         ApiKey apiKey = get(apiKeyId, organizationId);
 
         apiKey.setAccessKey(Random.generateRandomString(128));
         apiKey.setModifiedOn(new Date());
 
-        return apiKeyRepository.save(apiKey);
+        apiKeyRepository.save(apiKey);
+        return new AccessKeyResponse(apiKey.getAccessKey());
     }
 
     public AccessKeyResponse getAccessKey(String apiKeyId, String organizationId) throws Throwable {

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Property Value Change Logs - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item is-active" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="max-width: 1800px;">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-12">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-12">
+                            <h3 class="title is-4">
+                                <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                                Change Logs
+                            </h3>
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Change Type</th>
+                                        <th>Change Message</th>
+                                        <th>Segment</th>
+                                        <th>Value</th>
+                                        <th>Rule</th>
+                                        <th>Changed By</th>
+                                        <th>Changed On</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="property-value-logs"></tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Values</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="property-value-logs-template">
+        {{#each logs}}
+        <tr>
+            <td style="padding: 30px;">
+                <span class="tag is-medium is-info is-light">{{this.log.changeType}}</span>
+            </td>
+            <td style="padding: 30px;">
+                {{ this.log.changeMessage }}
+            </td>
+            <td style="padding: 30px;">
+                {{#each this.log.segment.path}}
+                <span class="tag is-medium is-light" style="margin-top: 0.1rem;">{{ this.name }}: {{ this.value }}</span>
+                {{/each}}
+            </td>
+            <td style="padding: 30px;">{{this.log.value}}</td>
+            <td style="padding: 30px;">{{this.log.rule.expression}}</td>
+            <td style="padding: 30px;">
+                {{this.actor.name}} {{this.actor.data.username}}
+                <span class="tag is-medium is-warning is-light">{{this.log.creatorType}}</span>
+            </td>
+            <td style="padding: 30px">{{this.log.createdOn}}</td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const valueLogApi = new PropertyValueLogApi();
+
+        const valueId = getQueryParameter("valueId");
+        const propertyId = getQueryParameter("propertyId");
+        const environmentId = getQueryParameter("environmentId");
+
+        let body = $("body");
+        const logsTemplate = Handlebars.compile($("#property-value-logs-template").html());
+
+        function renderPropertyValueLogs(page, size) {
+            valueLogApi.listPropertyValueLogs(valueId, propertyId, environmentId, page, size, function (data) {
+                data.forEach(l => {
+                    l.log.createdOn = new Date(l.log.createdOn);
+                });
+
+                $("#property-value-logs").append(logsTemplate({ logs: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let currentPage = 0;
+            let pageSize = 50;
+            renderPropertyValueLogs(currentPage, pageSize);
+
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderPropertyValueLogs(currentPage, pageSize);
+            });
+        });
+    </script>
+</body>
+
+</html>

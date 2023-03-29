@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sign Up For A New Account - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (localStorage.getItem("token")) {
+            window.location = "/home";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item is-active" href="/">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a class="button is-danger" href="/join">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>Sign up</span>
+                        </a>
+                        <a class="button is-success" href="/login">
+                            <span class="icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </span>
+                            <span>Log in</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 7rem;">
+            <div class="column is-4 is-offset-4">
+                <div class="box">
+                    <h3 class="title">
+                        Create A New Account
+                    </h3>
+                    <hr>
+                    <div id="join-message"></div>
+                    <form>
+                        <div class="field">
+                            <label class="label">Organization Name</label>
+                            <div class="control has-icons-left">
+                                <input id="organization-name" class="input is-medium" type="text"
+                                    placeholder="Your Organization Name">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control has-icons-left">
+                                <input id="username" class="input is-medium" type="text"
+                                    placeholder="Your Account Username">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control has-icons-left">
+                                <input id="password" class="input is-medium" type="password"
+                                    placeholder="Your Account Password">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <button type="submit" class="button is-info is-medium is-fullwidth" id="join-btn">
+                            <span class="icon"><i class="fas fa-user-plus"></i></span>
+                            <span>Sign Up For A New Account</span>
+                        </button>
+                    </form>
+                </div>
+                <a href="/login" class="button is-text is-fullwidth">Already have an account? Login now!</a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const accountApi = new AccountApi();
+
+            $("#join-btn").click(function (e) {
+                e.preventDefault();
+                let organizationName = $("#organization-name").val().trim();
+                let username = $("#username").val().trim();
+                let password = $("#password").val().trim();
+                
+                if (organizationName === "") {
+                    displayError($("#join-message"), "Organization name is required");
+                    return;
+                }
+
+                if (username === "") {
+                    displayError($("#join-message"), "Username is required");
+                    return;
+                }
+
+                if (password === "") {
+                    displayError($("#join-message"), "Password is required");
+                    return;
+                }
+
+                accountApi.signUp(username, password, organizationName, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#join-message"), "Account created successfully, please <a href='/login'>login</a> to continue");
+                    } else {
+                        displayError($("#join-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#join-message"), data.responseJSON.message);
+                })
+            });
+        });
+    </script>
+</body>
+
+</html>%                  

@@ -65,7 +65,7 @@ public class AppController extends AuthenticatedController {
     }
 
     @PutMapping(value = "/apps/{appId}/access-key")
-    public App resetAccessKey(@PathVariable String appId) throws Throwable {
+    public AccessKeyResponse resetAccessKey(@PathVariable String appId) throws Throwable {
         checkAccess(accessService, TargetType.APP, appId, Permission.MANAGE_ACCESS_KEY);
         return appService.resetAccessKey(appId, getOrganizationId());
     }

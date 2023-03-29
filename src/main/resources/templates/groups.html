@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Groups - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item is-active" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-10 is-offset-1">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-9">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-users"></i></span>
+                                <span>&nbsp;&nbsp;Groups</span>
+                            </h3>
+                        </div>
+                        <div class="column is-3">
+                            <button class="button is-success is-medium js-modal-trigger" data-target="add-group-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>Add New Group</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Users</th>
+                                        <th>Access</th>
+                                        <th>Actions</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groups">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More Groups</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-group-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add New Group</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-group-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control has-icons-left">
+                            <input id="add-group-name" class="input is-medium" type="text"
+                                placeholder="New Group's Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-users"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-group-description"
+                                placeholder="New Group's Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-group-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New Group</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-group-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="group-name"></h3>
+                    <hr>
+                    <p id="group-description"></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="edit-group-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify Group</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-group-message"></div>
+                <form>
+                    <input type="hidden" id="edit-group-id">
+                    <div class="field">
+                        <label class="label">Group Name</label>
+                        <div class="control has-icons-left">
+                            <input id="edit-group-name" class="input is-medium" type="text" placeholder="Group Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-users"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-group-description"
+                                placeholder="Group Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-group-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-group-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete Group</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-group-message"></div>
+                <form>
+                    <input type="hidden" id="delete-group-id">
+                    <div class="field">
+                        <label class="label">Confirm Group Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-group-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-group-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete Group</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="groups-template">
+        {{#each groups}}
+        <tr id="group-{{this.id}}">
+            <td style="padding: 30px;" id="group-name-{{this.id}}">
+                <span class="content is-medium">{{this.name}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/group-members?id={{this.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/actor-access?type=group&id={{this.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-user-shield"></i></span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-info is-light js-modal-trigger edit-group-modal-btn" data-target="edit-group-modal">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button data-id="{{this.id}}" class="button is-danger is-light js-modal-trigger delete-group-modal-btn" data-target="delete-group-modal">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-group-modal-btn" data-target="get-group-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const groupApi = new GroupApi();
+        const groupsTemplate = Handlebars.compile($("#groups-template").html());
+
+        function renderGroups(page, size) {
+            groupApi.listAllGroups(page, size, function (data) {
+                $("#groups").append(groupsTemplate({ groups: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#add-group-btn").click(function (e) {
+                e.preventDefault();
+                let name = $("#add-group-name").val().trim();
+                let description = $("#add-group-description").val().trim();
+
+                if (name === "") {
+                    displayError($("#add-group-message"), "Group name is required");
+                    return;
+                }
+
+                groupApi.createGroup(name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-group-message"), "New group created successfully");
+                        $("#groups").prepend(groupsTemplate({ groups: [data] }));
+                    } else {
+                        displayError($("#add-group-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-group-message"), data.responseJSON.message);
+                })
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+            renderGroups(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderGroups(currentPage, pageSize);
+            });
+
+            let body = $("body");
+            body.on("click", ".get-group-modal-btn", function () {
+                let groupId = $(this).data("id");
+                groupApi.getGroup(groupId, function (data) {
+                    $("#group-name").html(data.name);
+                    $("#group-description").html(data.description);
+                });
+            });
+            body.on("click", ".edit-group-modal-btn", function () {
+                let groupId = $(this).data("id");
+                $("#edit-group-id").val(groupId);
+                $("#edit-group-message").html("");
+
+                groupApi.getGroup(groupId, function (data) {
+                    $("#edit-group-name").val(data.name);
+                    $("#edit-group-description").val(data.description);
+                });
+            });
+            body.on("click", ".delete-group-modal-btn", function () {
+                $("#delete-group-id").val($(this).data("id"));
+                $("#delete-group-message").html("");
+            });
+
+            $("#edit-group-btn").click(function (e) {
+                e.preventDefault();
+                let groupId = $("#edit-group-id").val().trim();
+                let name = $("#edit-group-name").val().trim();
+                let description = $("#edit-group-description").val().trim();
+
+                if (groupId === "") {
+                    displayError($("#edit-group-message"), "Group is not selected");
+                    return;
+                }
+
+                if (name === "") {
+                    displayError($("#edit-group-message"), "Group name is required");
+                    return;
+                }
+
+                groupApi.updateGroup(groupId, name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-group-message"), "Changes saved successfully");
+                        $("#group-name-" + groupId).html(data.name);
+                    } else {
+                        displayError($("#edit-group-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-group-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-group-btn").click(function (e) {
+                e.preventDefault();
+                let groupId = $("#delete-group-id").val().trim();
+                let confirmation = $("#delete-group-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-group-message"), "Please confirm deletion of the group below");
+                    return;
+                }
+
+                groupApi.deleteGroup(groupId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-group-message"), "Group deleted successfully");
+                        $("#group-" + groupId).remove();
+                    } else {
+                        displayError($("#delete-group-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-group-message"), data.responseJSON.message);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

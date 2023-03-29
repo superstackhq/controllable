@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Property Values - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item is-active" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="max-width: 1800px;">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-12">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-12">
+                            <div class="dropdown is-hoverable">
+                                <div class="dropdown-trigger">
+                                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                        <span>Select Environment</span>
+                                        <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                    <div class="dropdown-content" id="environments">
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="tag is-large is-warning" id="environment">No Environment Selected</span>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-10">
+                            <h3 id="property-key" class="title is-3"></h3>
+                            <div class="tag is-medium is-light is-info" id="property-namespace"></div>
+                        </div>
+                        <div class="column is-2">
+                            <button class="button is-medium is-success js-modal-trigger"
+                                data-target="add-property-value-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New Value</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns" id="segment-selector-section">
+                        <div class="column is-12">
+                            <hr>
+                            <h5 class="title is-5">
+                                <span class="icon"><i class="fas fa-filter"></i></span>
+                                Filter By Segment
+                            </h5>
+                            <div id="segment-selector"></div>
+                            <button style="margin-top: 1rem;" class="button is-medium is-light is-info"
+                                id="select-segment-btn">
+                                <span class="icon"><i class="fas fa-filter"></i></span>
+                                <span>Filter By Segment</span>
+                            </button>
+                            <button style="margin-top: 1rem;" class="button is-medium is-light is-danger"
+                                id="clear-segment-btn">
+                                <span class="icon"><i class="fas fa-ban"></i></span>
+                                <span>Clear All Filters</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns" id="values-section">
+                        <div class="column is-12">
+                            <hr>
+                            <h3 class="title is-4">
+                                <span class="icon"><i class="fas fa-list"></i></span>
+                                Values
+                            </h3>
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Segment</th>
+                                        <th>Rule</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                        <th>Logs</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="property-values"></tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Values</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-property-value-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add Property Value</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-property-value-message"></div>
+                <form>
+                    <div class="field">
+                        <div class="label">Value</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Property Value"
+                                id="add-property-value-value"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Rule</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Property Value Rule Expression"
+                                id="add-property-value-rule"></textarea>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="dropdown is-hoverable">
+                        <div class="dropdown-trigger">
+                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                <span>Select Environment</span>
+                                <span class="icon is-small">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div class="dropdown-content" id="add-property-value-environments">
+                            </div>
+                        </div>
+                    </div>
+                    <span class="tag is-large is-warning" id="add-property-value-environment">No Environment
+                        Selected</span>
+                    <hr>
+                    <div id="add-property-value-segment-selector" style="margin-top: 1rem;"></div>
+                    <hr>
+                    <div class="field">
+                        <div class="label">Change Message</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Change Message"
+                                id="add-property-value-change-message"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-property-value-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New Value</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="edit-property-value-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Edit Property Value</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-property-value-message"></div>
+                <form>
+                    <input type="hidden" id="edit-property-value-id" />
+                    <div class="field">
+                        <div class="label">Value</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Property Value"
+                                id="edit-property-value-value"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Rule</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Property Value Rule Expression"
+                                id="edit-property-value-rule"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Change Message</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Change Message"
+                                id="edit-property-value-change-message"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="edit-property-value-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-property-value-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete Property Value</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-property-value-message"></div>
+                <form>
+                    <input type="hidden" id="delete-property-value-id">
+                    <div class="field">
+                        <label class="label">Confirm Property Value Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-property-value-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Change Message</div>
+                        <div class="control has-icons-left">
+                            <textarea class="textarea is-medium" placeholder="Change Message"
+                                id="delete-property-value-change-message"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-property-value-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete Property</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="segment-selector-template">
+        {{#each levels}}
+        <div class="field">
+            <label class="label">{{this.name}}</label>
+            <div class="control has-icons-left">
+                <input class="input is-medium segment-tree-level" id="segment-tree-level-{{this.name}}" type="text" placeholder="{{this.description}}" data-segment-tree-level-name="{{this.name}}" data-segment-tree-level-data-type="{{this.dataType}}">
+                <span class="icon is-left is-small">
+                    <i class="fas fa-th-list"></i>
+                </span>    
+            </div>
+            <label class="checkbox">
+                <input type="checkbox" class="segment-tree-level-default" data-name="{{this.name}}">
+                Default Segment Component Value
+            </label>
+        </div>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="environments-template">
+        {{#each environments}}
+        <a class="dropdown-item environment-selector" data-environment-id="{{this.id}}" data-environment="{{this.name}}">
+            <strong>{{this.name}}</strong>
+            <p>{{this.description}}</p>
+        </a>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="add-property-value-segment-selector-template">
+        {{#each levels}}
+        <div class="field">
+            <label class="label">{{this.name}}</label>
+            <div class="control has-icons-left">
+                <input class="input is-medium add-property-value-segment-tree-level" id="add-property-value-segment-tree-level-{{this.name}}" type="text" placeholder="{{this.description}}" data-segment-tree-level-data-type="{{this.dataType}}" data-segment-tree-level-name="{{this.name}}">
+                <span class="icon is-left is-small">
+                    <i class="fas fa-th-list"></i>
+                </span>    
+            </div>    
+            <label class="checkbox">
+                <input type="checkbox" class="add-property-value-segment-tree-level-default" data-name="{{this.name}}">
+                Default Segment Component Value
+            </label>
+        </div>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="add-property-value-environments-template">
+        {{#each environments}}
+        <a class="dropdown-item add-property-value-environment-selector" data-environment-id="{{this.id}}" data-environment="{{this.name}}">
+            <strong>{{this.name}}</strong>
+            <p>{{this.description}}</p>
+        </a>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="property-values-template">
+        {{#each propertyValues}}
+        <tr id="property-value-{{ this.id }}">
+            <td style="padding: 30px;">
+                {{#each this.segment.path}}
+                <span class="tag is-medium is-light">{{ this.name }}: {{ this.value }}</span>
+                {{/each}}
+            </td>
+            <td style="padding: 30px;" id="property-value-rule-{{this.id}}">{{this.rule.expression}}</td>
+            <td style="padding: 30px;" id="property-value-value-{{this.id}}">{{this.value}}</td>
+            <td style="padding: 30px;">
+                <button class="button is-warning is-light js-modal-trigger edit-property-value-modal-btn" data-target="edit-property-value-modal" data-id="{{ this.id }}">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button class="button is-danger is-light js-modal-trigger delete-property-value-modal-btn" data-target="delete-property-value-modal" data-id="{{ this.id }}">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <a href="property-value-logs?valueId={{this.id}}&propertyId={{this.propertyId}}&environmentId={{this.environmentId}}" class="button is-info is-light">
+                    <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                    <span>Logs</span>
+                </a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const propertyApi = new PropertyApi();
+        const environmentApi = new EnvironmentApi();
+        const propertyValueApi = new PropertyValueApi();
+
+        const propertyId = getQueryParameter("id");
+        let property = null;
+
+        const segmentSelectorTemplate = Handlebars.compile($("#segment-selector-template").html());
+        const environmentsTemplate = Handlebars.compile($("#environments-template").html());
+        const addPropertyValueSegmentSelectorTemplate = Handlebars.compile($("#add-property-value-segment-selector-template").html());
+        const addPropertyValueEnvironmentsTemplate = Handlebars.compile($("#add-property-value-environments-template").html());
+        const propertyValuesTemplate = Handlebars.compile($("#property-values-template").html());
+
+        let body = $("body");
+        let selectedEnvironment = null;
+        let selectedSegment = null;
+        let addPropertyValueSelectedEnvironment = null;
+
+        function renderPropertyValues(page, size) {
+            if (selectedEnvironment == null || selectedEnvironment === "") {
+                return;
+            }
+
+            if (selectedSegment == null || Object.keys(selectedSegment).length == 0) {
+                propertyValueApi.listAllPropertyValues(selectedEnvironment, propertyId, page, size, function (data) {
+                    $("#property-values").append(propertyValuesTemplate({ propertyValues: data }));
+
+                    if (data.length < size) {
+                        $("#load-more-btn").hide();
+                    }
+                });
+            } else {
+                propertyValueApi.listPropertyValues(selectedEnvironment, propertyId, selectedSegment, page, size, function (data) {
+                    $("#property-values").append(propertyValuesTemplate({ propertyValues: data }));
+
+                    if (data.length < size) {
+                        $("#load-more-btn").hide();
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            let currentPage = 0;
+            let pageSize = 50;
+
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderPropertyValues(currentPage, pageSize);
+            });
+
+            propertyApi.getProperty(propertyId, function (data) {
+                property = data;
+                $("#property-key").html(data.key);
+                if (data.namespace != null) {
+                    $("#property-namespace").html(data.namespace.join("/"));
+                } else {
+                    $("#property-namespace").html("Root Namespace");
+                }
+
+                if (data.segmentTreeStructure != null) {
+                    if (data.segmentTreeStructure.levels != null && data.segmentTreeStructure.levels.length > 0) {
+                        $("#segment-selector").html(segmentSelectorTemplate({ levels: data.segmentTreeStructure.levels }));
+                        $("#add-property-value-segment-selector").html(addPropertyValueSegmentSelectorTemplate({ levels: data.segmentTreeStructure.levels }));
+                    } else {
+                        $("#segment-selector-section").hide();
+                    }
+                } else {
+                    $("#segment-selector-section").hide();
+                }
+            });
+
+            environmentApi.listEnvironments(0, 0, function (data) {
+                $("#environments").html(environmentsTemplate({ environments: data }));
+                $("#add-property-value-environments").html(addPropertyValueEnvironmentsTemplate({ environments: data }));
+            });
+
+            body.on("click", ".environment-selector", function () {
+                selectedEnvironment = $(this).data("environment-id");
+                $("#environment").html($(this).data("environment"));
+                $("#property-values").html("");
+                $("#load-more-btn").show();
+                currentPage = 0;
+                renderPropertyValues(currentPage, pageSize);
+                $('html, body').animate({
+                    scrollTop: $("#values-section").offset().top
+                }, 2000);
+            });
+
+            body.on("click", ".add-property-value-environment-selector", function () {
+                addPropertyValueSelectedEnvironment = $(this).data("environment-id");
+                $("#add-property-value-environment").html($(this).data("environment"));
+            });
+
+            $("#add-property-value-btn").click(function (e) {
+                e.preventDefault();
+
+                let value = $("#add-property-value-value").val();
+                let ruleExpression = $("#add-property-value-rule").val();
+                let changeMessage = $("#add-property-value-change-message").val();
+
+                let segmentPathComponents = [];
+                let dataType = property.dataType;
+
+                if (addPropertyValueSelectedEnvironment == null || addPropertyValueSelectedEnvironment === "") {
+                    displayError($("#add-property-value-message"), "Environment is not selected");
+                    return;
+                }
+
+                value = convertToDataType(value, dataType);
+
+                $(".add-property-value-segment-tree-level").each((i, el) => {
+                    let dataType = $(el).data("segment-tree-level-data-type");
+                    let name = $(el).data("segment-tree-level-name");
+                    let value = $(el).val().trim();
+
+                    if (value === "") {
+                        value = null;
+                    } else {
+                        value = convertToDataType(value, dataType);
+                    }
+
+                    segmentPathComponents.push({
+                        name: name,
+                        value: value
+                    })
+                });
+
+                let segment = {
+                    path: segmentPathComponents
+                };
+
+                let rule = {
+                    expression: ruleExpression
+                }
+
+                propertyValueApi.createPropertyValue(propertyId, addPropertyValueSelectedEnvironment, value, segment, rule, changeMessage, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        if (selectedEnvironment == addPropertyValueSelectedEnvironment) {
+                            $("#property-values").prepend(propertyValuesTemplate({ propertyValues: [data] }));
+                        }
+
+                        displaySuccess($("#add-property-value-message"), "Property value added successfully");
+                    } else {
+                        displayError($("#add-property-value-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-property-value-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#clear-segment-btn").click(function (e) {
+                e.preventDefault();
+                selectedSegment = null;
+                $("#property-values").html("");
+                $("#load-more-btn").show();
+                currentPage = 0;
+                renderPropertyValues(currentPage, pageSize);
+                $('html, body').animate({
+                    scrollTop: $("#values-section").offset().top
+                }, 2000);
+                $(".segment-tree-level").val("");
+                $(".segment-tree-level").prop("disabled", false);
+                $(".segment-tree-level-default").prop("checked", false);
+
+            });
+
+            $("#select-segment-btn").click(function (e) {
+                e.preventDefault();
+
+                let selectedSegmentPath = [];
+
+                $(".segment-tree-level").each((i, el) => {
+                    let name = $(el).data("segment-tree-level-name");
+                    let value = $(el).val().trim();
+                    let dataType = $(el).data("segment-tree-level-data-type");
+
+                    if (value === "") {
+                        value = null;
+                    } else {
+                        value = convertToDataType(value, dataType);
+                    }
+
+                    selectedSegmentPath.push({
+                        "name": name,
+                        "value": value
+                    });
+                });
+
+                selectedSegment = {
+                    path: selectedSegmentPath
+                }
+
+                $("#property-values").html("");
+                $("#load-more-btn").show();
+                currentPage = 0;
+                renderPropertyValues(currentPage, pageSize);
+                $('html, body').animate({
+                    scrollTop: $("#values-section").offset().top
+                }, 2000);
+            });
+
+            body.on("click", ".delete-property-value-modal-btn", function () {
+                $("#delete-property-value-id").val($(this).data("id"));
+                $("#delete-property-value-message").html("");
+            });
+
+            body.on("click", ".edit-property-value-modal-btn", function () {
+                let propertyValueId = $(this).data("id");
+                $("#edit-property-value-id").val(propertyValueId);
+                $("#edit-property-value-message").html("");
+
+                propertyValueApi.getPropertyValue(propertyValueId, propertyId, selectedEnvironment, function (data) {
+                    $("#edit-property-value-value").val(data.value);
+                    if (data.rule != null && data.rule.expression != null) {
+                        $("#edit-property-value-rule").val(data.rule.expression);
+                    }
+                });
+            });
+
+            $("#edit-property-value-btn").click(function (e) {
+                let propertyValueId = $("#edit-property-value-id").val().trim();
+
+                if (propertyValueId === "") {
+                    displayError($("#edit-property-value-message"), "Property value is not selected");
+                    return;
+                }
+
+                let value = $("#edit-property-value-value").val();
+                let ruleExpression = $("#edit-property-value-rule").val();
+                let changeMessage = $("#edit-property-value-change-message").val();
+
+                value = convertToDataType(value, property.dataType);
+
+                let rule = {
+                    expression: ruleExpression
+                }
+
+                propertyValueApi.updatePropertyValue(propertyValueId, propertyId, selectedEnvironment, value, rule, changeMessage, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-property-value-message"), "Changes saved successfully");
+                        $("#property-value-rule-" + data.id).html(data.rule.expression);
+                        $("#property-value-value-" + data.id).html(data.value);
+                    } else {
+                        displayError($("#edit-property-value-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-property-value-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-property-value-btn").click(function (e) {
+                let propertyValueId = $("#delete-property-value-id").val().trim();
+
+                if (propertyValueId === "") {
+                    displayError($("#delete-property-value-message"), "Property value is not selected");
+                    return;
+                }
+
+                let confirmation = $("#delete-property-value-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-property-value-message"), "Please confirm deletion of the value below");
+                    return;
+                }
+
+                let changeMessage = $("#delete-property-value-change-message").val();
+
+                propertyValueApi.deletePropertyValue(propertyValueId, propertyId, selectedEnvironment, changeMessage, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-property-value-message"), "Property value deleted successfully");
+                        $("#property-value-" + data.id).remove();
+                    } else {
+                        displayError($("#delete-property-value-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-property-value-message"), data.responseJSON.message);
+                });
+            });
+
+            body.on("click", ".segment-tree-level-default", function (e) {
+                let checked = $(this).is(":checked");
+                let name = $(this).data("name");
+
+                if (checked) {
+                    $("#segment-tree-level-" + name).val("default");
+                    $("#segment-tree-level-" + name).prop("disabled", true);
+                } else {
+                    $("#segment-tree-level-" + name).val("");
+                    $("#segment-tree-level-" + name).prop("disabled", false);
+                }
+            });
+
+            body.on("click", ".add-property-value-segment-tree-level-default", function (e) {
+                let checked = $(this).is(":checked");
+                let name = $(this).data("name");
+
+                if (checked) {
+                    $("#add-property-value-segment-tree-level-" + name).val("default");
+                    $("#add-property-value-segment-tree-level-" + name).prop("disabled", true);
+                } else {
+                    $("#add-property-value-segment-tree-level-" + name).val("");
+                    $("#add-property-value-segment-tree-level-" + name).prop("disabled", false);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

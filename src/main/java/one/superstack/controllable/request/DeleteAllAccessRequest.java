@@ -13,7 +13,6 @@ public class DeleteAllAccessRequest implements Serializable {
     @NotNull
     private TargetType targetType;
 
-    @NotBlank
     private String targetId;
 
     @NotNull

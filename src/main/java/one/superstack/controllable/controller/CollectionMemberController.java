@@ -54,7 +54,7 @@ public class CollectionMemberController extends AuthenticatedController {
     }
 
     @GetMapping(value = "/affordances/collections")
-    public List<Collection> listCollections(@PathVariable String collectionId, @RequestParam AffordanceType affordanceType, @RequestParam String affordanceId, Pageable pageable) {
+    public List<Collection> listCollections(@RequestParam AffordanceType affordanceType, @RequestParam String affordanceId, Pageable pageable) {
         return collectionMemberService.listCollections(new Affordance(affordanceType, affordanceId), getOrganizationId(), pageable);
     }
 

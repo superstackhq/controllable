@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item is-active" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-6 is-offset-3">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-7">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                                <span>&nbsp;&nbsp;Collections</span>
+                            </h3>
+                        </div>
+                        <div class="column is-5">
+                            <button class="button is-success is-medium js-modal-trigger"
+                                data-target="add-collection-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New Collection</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Info</th>
+                                        <th>Open</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="collections">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Collections</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-collection-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add Collection</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-collection-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control has-icons-left">
+                            <input id="add-collection-name" class="input is-medium" type="text"
+                                placeholder="New Collection Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-clipboard-list"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-collection-description"
+                                placeholder="New Collection Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-collection-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New Collection</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-collection-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="collection-name"></h3>
+                    <hr>
+                    <p id="collection-description"></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="collections-template">
+        {{#each collections}}
+        <tr id="collection-{{this.id}}">
+            <td style="padding: 30px;">
+                <span class="content is-medium" id="collection-name-{{this.id}}">{{this.name}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-collection-modal-btn" data-target="get-collection-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/collection?id={{this.id}}" class="button is-info is-light">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Open</span>
+                </a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const collectionApi = new CollectionApi();
+        const collectionsTemplate = Handlebars.compile($("#collections-template").html());
+
+        function renderCollections(page, size) {
+            collectionApi.listCollections(page, size, function (data) {
+                $("#collections").append(collectionsTemplate({ collections: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#add-collection-btn").click(function (e) {
+                e.preventDefault();
+                let name = $("#add-collection-name").val().trim();
+                let description = $("#add-collection-description").val().trim();
+
+                if (name === "") {
+                    displayError($("#add-collection-message"), "Collection name is required");
+                    return;
+                }
+
+                collectionApi.createCollection(name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-collection-message"), "Collection added successfully");
+                        $("#collections").prepend(collectionsTemplate({ collections: [data] }));
+                    } else {
+                        displayError($("#add-collection-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-collection-message"), data.responseJSON.message);
+                });
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+
+            renderCollections(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderCollections(currentPage, pageSize);
+            });
+
+            let body = $("body");
+            body.on("click", ".get-collection-modal-btn", function () {
+                let collectionId = $(this).data("id");
+                collectionApi.getCollection(collectionId, function (data) {
+                    $("#collection-name").html(data.name);
+                    $("#collection-description").html(data.description);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

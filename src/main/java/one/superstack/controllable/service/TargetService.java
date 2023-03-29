@@ -57,6 +57,25 @@ public class TargetService {
         }
     }
 
+    public Target get(TargetReference targetReference) throws Throwable {
+        switch (targetReference.getType()) {
+
+            case APP -> {
+                return new Target(TargetType.APP, targetReference.getId(), appService.get(targetReference.getId()));
+            }
+            case ENVIRONMENT -> {
+                return new Target(TargetType.ENVIRONMENT, targetReference.getId(), environmentService.get(targetReference.getId()));
+            }
+            case PROPERTY -> {
+                return new Target(TargetType.PROPERTY, targetReference.getId(), propertyService.get(targetReference.getId()));
+            }
+            case COLLECTION -> {
+                return new Target(TargetType.COLLECTION, targetReference.getId(), collectionService.get(targetReference.getId()));
+            }
+            default -> throw new ClientException("Invalid target type");
+        }
+    }
+
     public List<Target> fetch(List<TargetReference> targetReferences) throws ExecutionException, InterruptedException {
         List<String> propertyIds = new ArrayList<>();
         List<String> appIds = new ArrayList<>();

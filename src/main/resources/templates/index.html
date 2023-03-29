@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (localStorage.getItem("token")) {
+            window.location = "/home";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item is-active" href="/">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a class="button is-danger" href="/join">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>Sign up</span>
+                        </a>
+                        <a class="button is-success" href="/login">
+                            <span class="icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </span>
+                            <span>Log in</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="hero is-dark is-fullheight-with-navbar">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <p class="title">
+                    Controlling Your Software Via Configurations Can Get Complex<br> With Scale, Let's Simplify :)
+                </p>
+                <p class="subtitle" style="margin-top: 2rem;">
+                    Control your <span id="target" style="color:chartreuse">applications</span> using our powerful and
+                    scalable configuration
+                    stack.
+                </p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Controllable</strong> is made with &#x2764; at <a href="https://superstack.one"
+                    target="_blank">SuperStack</a>
+            </p>
+        </div>
+    </footer>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const healthApi = new HealthApi();
+
+        $(document).ready(function () {
+            let targetIndex = 0;
+            let targets = ["applications", "services", "systems", "devices", "frontend", "backend"]
+
+            window.setInterval(function () {
+                targetIndex = ((targetIndex + 1) % targets.length);
+                target = targets[targetIndex];
+                $("#target").fadeOut(200, function () {
+                    $(this).html(target).fadeIn(200);
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+
+</html>

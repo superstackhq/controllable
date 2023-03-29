@@ -40,8 +40,14 @@ public class AccessControlService {
     }
 
     public void add(AccessRequest accessRequest, AuthenticatedActor creator) {
-        if (!targetService.exists(accessRequest.getTargetType(), accessRequest.getTargetId(), creator.getOrganizationId())) {
-            throw new NotFoundException("Target not found");
+        if (null != accessRequest.getTargetId() && accessRequest.getTargetId().isBlank()) {
+            accessRequest.setTargetId(null);
+        }
+
+        if (null != accessRequest.getTargetId()) {
+            if (!targetService.exists(accessRequest.getTargetType(), accessRequest.getTargetId(), creator.getOrganizationId())) {
+                throw new NotFoundException("Target not found");
+            }
         }
 
         if (!actorService.exists(accessRequest.getActorType(), accessRequest.getActorId(), creator.getOrganizationId())) {
@@ -64,32 +70,64 @@ public class AccessControlService {
     }
 
     public void delete(AccessRequest accessRequest, String organizationId) {
+        if (null != accessRequest.getTargetId() && accessRequest.getTargetId().isBlank()) {
+            accessRequest.setTargetId(null);
+        }
+
+        if (null != accessRequest.getEnvironmentId() && accessRequest.getEnvironmentId().isBlank()) {
+            accessRequest.setEnvironmentId(null);
+        }
+
         accessService.delete(accessRequest, organizationId);
     }
 
     public Access deleteAll(DeleteAllAccessRequest deleteAllAccessRequest, String organizationId) throws Throwable {
+        if (null != deleteAllAccessRequest.getEnvironmentId() && deleteAllAccessRequest.getEnvironmentId().isBlank()) {
+            deleteAllAccessRequest.setEnvironmentId(null);
+        }
+
+        if (null != deleteAllAccessRequest.getTargetId() && deleteAllAccessRequest.getTargetId().isBlank()) {
+            deleteAllAccessRequest.setTargetId(null);
+        }
+
         return accessService.deleteAll(deleteAllAccessRequest, organizationId);
     }
 
     public List<AccessResponse> list(TargetType targetType, String targetId, ActorType actorType, String environmentId, String organizationId, Pageable pageable) throws ExecutionException, InterruptedException {
+        if (null != environmentId && environmentId.isBlank()) {
+            environmentId = null;
+        }
+
+        if (null != targetId && targetId.isBlank()) {
+            targetId = null;
+        }
+
         List<Access> accesses = accessService.list(targetType, targetId, actorType, environmentId, organizationId, pageable);
 
         List<ActorReference> actorReferences = accesses.stream().map(access -> new ActorReference(access.getActorType(), access.getActorId())).collect(Collectors.toList());
         Map<ActorReference, Actor> actorMap = actorService.fetch(actorReferences).stream().collect(Collectors.toMap(actor -> new ActorReference(actor.getType(), actor.getReferenceId()), actor -> actor, (a, b) -> b));
 
-        List<AccessResponse> accessResponses = new ArrayList<>();
+        List<AccessResponse> accessActorRespons = new ArrayList<>();
 
         for (Access access : accesses) {
-            accessResponses.add(new AccessResponse(access, actorMap.get(new ActorReference(access.getActorType(), access.getActorId()))));
+            accessActorRespons.add(new AccessResponse(access, actorMap.get(new ActorReference(access.getActorType(), access.getActorId()))));
         }
 
-        return accessResponses;
+        return accessActorRespons;
     }
 
     public List<AccessResponse> get(TargetType targetType, String targetId, ActorType actorType, String actorId, String environmentId, String organizationId) throws Throwable {
-        Access access = accessService.get(targetType, targetId, actorType, actorId, environmentId, organizationId);
+        if (null != environmentId && environmentId.isBlank()) {
+            environmentId = null;
+        }
 
-        Actor actor = actorService.get(new ActorReference(access.getActorType(), access.getId()));
+        if (null != targetId && targetId.isBlank()) {
+            targetId = null;
+        }
+
+        Access access = accessService.get(targetType, targetId, actorType, actorId, environmentId, organizationId);
+        Actor actor = actorService.get(new ActorReference(access.getActorType(), access.getActorId()));
+
         return List.of(new AccessResponse(access, actor));
     }
 }

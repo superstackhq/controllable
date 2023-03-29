@@ -55,7 +55,7 @@ public class ApiKeyController extends AuthenticatedController {
     }
 
     @PutMapping(value = "/api-keys/{apiKeyId}/access-key")
-    public ApiKey resetAccessKey(@PathVariable String apiKeyId) throws Throwable {
+    public AccessKeyResponse resetAccessKey(@PathVariable String apiKeyId) throws Throwable {
         checkFullAccess();
         return apiKeyService.resetAccessKey(apiKeyId, getOrganizationId());
     }

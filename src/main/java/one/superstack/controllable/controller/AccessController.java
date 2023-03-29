@@ -48,7 +48,7 @@ public class AccessController extends AuthenticatedController {
     }
 
     @GetMapping(value = "/access")
-    public List<AccessResponse> list(@RequestParam TargetType targetType, @RequestParam String targetId, @RequestParam ActorType actorType, @RequestParam(required = false) String actorId, @RequestParam String environmentId, Pageable pageable) throws Throwable {
+    public List<AccessResponse> list(@RequestParam TargetType targetType, @RequestParam(required = false) String targetId, @RequestParam ActorType actorType, @RequestParam(required = false) String actorId, @RequestParam(required = false) String environmentId, Pageable pageable) throws Throwable {
         if (null == actorId || actorId.isBlank()) {
             return accessControlService.list(targetType, targetId, actorType, environmentId, getOrganizationId(), pageable);
         } else {

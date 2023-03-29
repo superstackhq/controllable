@@ -9,7 +9,7 @@ import one.superstack.controllable.request.AppAccessRequest;
 import one.superstack.controllable.request.DeleteAllAppAccessRequest;
 import one.superstack.controllable.response.AppAccessResponse;
 import one.superstack.controllable.response.SuccessResponse;
-import one.superstack.controllable.response.TargetResponse;
+import one.superstack.controllable.response.AppAccessTargetResponse;
 import one.superstack.controllable.service.AccessService;
 import one.superstack.controllable.service.AppAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -57,8 +56,12 @@ public class AppAccessController extends AuthenticatedController {
     }
 
     @GetMapping(value = "/apps/{appId}/access")
-    public List<TargetResponse> listTargets(@PathVariable String appId, @RequestParam TargetType targetType, Pageable pageable) throws ExecutionException, InterruptedException {
-        return appAccessService.listTargets(appId, targetType, getOrganizationId(), pageable);
+    public List<AppAccessTargetResponse> listTargets(@PathVariable String appId, @RequestParam(required = false) String targetId, @RequestParam TargetType targetType, Pageable pageable) throws Throwable {
+        if (null == targetId || targetId.isBlank()) {
+            return appAccessService.listTargets(appId, targetType, getOrganizationId(), pageable);
+        } else {
+            return List.of(appAccessService.getForTarget(appId, targetType, targetId, getOrganizationId()));
+        }
     }
 
     @GetMapping(value = "/access/apps")

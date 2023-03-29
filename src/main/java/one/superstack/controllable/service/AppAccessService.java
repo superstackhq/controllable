@@ -11,8 +11,8 @@ import one.superstack.controllable.pojo.TargetReference;
 import one.superstack.controllable.repository.AppAccessRepository;
 import one.superstack.controllable.request.AppAccessRequest;
 import one.superstack.controllable.request.DeleteAllAppAccessRequest;
+import one.superstack.controllable.response.AppAccessTargetResponse;
 import one.superstack.controllable.response.AppAccessResponse;
-import one.superstack.controllable.response.TargetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -94,13 +94,19 @@ public class AppAccessService {
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("App access not found"));
     }
 
+    public AppAccessTargetResponse getForTarget(String appId, TargetType targetType, String targetId, String organizationId) throws Throwable {
+        AppAccess appAccess = get(appId, targetType, targetId, organizationId);
+        Target target = targetService.get(new TargetReference(appAccess.getTargetType(), appAccess.getTargetId()));
+        return new AppAccessTargetResponse(target, appAccess);
+    }
+
     public AppAccess deleteAll(String appId, DeleteAllAppAccessRequest deleteAllAppAccessRequest, String organizationId) throws Throwable {
         AppAccess appAccess = get(appId, deleteAllAppAccessRequest.getTargetType(), deleteAllAppAccessRequest.getTargetId(), organizationId);
         appAccessRepository.delete(appAccess);
         return appAccess;
     }
 
-    public List<TargetResponse> listTargets(String appId, TargetType targetType, String organizationId, Pageable pageable) throws ExecutionException, InterruptedException {
+    public List<AppAccessTargetResponse> listTargets(String appId, TargetType targetType, String organizationId, Pageable pageable) throws ExecutionException, InterruptedException {
         List<AppAccess> mappings = appAccessRepository.findByAppIdAndTargetTypeAndOrganizationId(appId, targetType, organizationId, pageable);
 
         List<TargetReference> targetReferences = new ArrayList<>();
@@ -113,7 +119,7 @@ public class AppAccessService {
                 .stream().collect(Collectors.toMap(target -> new TargetReference(target.getType(), target.getReferenceId()), target -> target, (a, b) -> b));
 
         return mappings.stream()
-                .map(appAccess -> new TargetResponse(targetMap.get(new TargetReference(appAccess.getTargetType(), appAccess.getTargetId())), appAccess.getPermissions())).toList();
+                .map(appAccess -> new AppAccessTargetResponse(targetMap.get(new TargetReference(appAccess.getTargetType(), appAccess.getTargetId())), appAccess)).toList();
     }
 
     public List<AppAccessResponse> listApps(TargetType targetType, String targetId, String organizationId, Pageable pageable) {
@@ -124,7 +130,7 @@ public class AppAccessService {
         List<AppAccessResponse> responses = new ArrayList<>();
 
         for (AppAccess appAccess : mappings) {
-            responses.add(new AppAccessResponse(appMap.get(appAccess.getAppId()), appAccess.getPermissions()));
+            responses.add(new AppAccessResponse(appMap.get(appAccess.getAppId()), appAccess));
         }
 
         return responses;

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>API Access - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-12">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-key"></i></span>
+                                <span>&nbsp;&nbsp;API Keys</span>
+                            </h3>
+                        </div>
+                        <div class="column is-2">
+                            <button class="button is-success is-medium js-modal-trigger"
+                                data-target="add-api-key-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New API Key</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Access Key</th>
+                                        <th>Has Full Access</th>
+                                        <th>Permissions</th>
+                                        <th>Actions</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="api-keys">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                API Keys</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-api-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add API Key</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-api-key-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control has-icons-left">
+                            <input id="add-api-key-name" class="input is-medium" type="text"
+                                placeholder="New API Key Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-code"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-api-key-description"
+                                placeholder="New API Key Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" id="add-api-key-full-access">
+                            Has Full Access
+                        </label>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-api-key-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New API Key</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-api-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="api-key-name"></h3>
+                    <hr>
+                    <p id="api-key-description"></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="api-key-access-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-key"></i></span>
+                    <span>Access Key</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="api-key-access-key-message"></div>
+                <textarea class="textarea is-medium" disabled id="api-key-access-key"></textarea>
+                <button class="button is-medium is-info" style="margin-top: 1rem;"
+                    id="reset-api-key-access-key-prompt-btn">Reset Access Key</button>
+                <div id="reset-api-key-access-key-confirmation-form" style="margin-top: 2rem;">
+                    <form>
+                        <input type="hidden" id="reset-api-key-access-key-id">
+                        <div class="field">
+                            <label class="label">Confirm Reset Of Access Key</label>
+                            <div class="control has-icons-left">
+                                <input id="reset-api-key-access-key-confirmation" class="input is-medium" type="text"
+                                    placeholder="Enter 'yes' to confirm reset of access key">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <button class="button is-medium is-danger" id="reset-api-key-access-key-btn">Confirm Reset Of
+                            Access
+                            Key</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="edit-api-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify API Key</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-api-key-message"></div>
+                <form>
+                    <input type="hidden" id="edit-api-key-id">
+                    <div class="field">
+                        <label class="label">API Key Name</label>
+                        <div class="control has-icons-left">
+                            <input id="edit-api-key-name" class="input is-medium" type="text"
+                                placeholder="API Key Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-code"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-api-key-description"
+                                placeholder="API Key Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-api-key-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="edit-api-key-full-access-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify API Key Full Access</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-api-key-full-access-message"></div>
+                <form>
+                    <input type="hidden" id="edit-api-key-full-access-id">
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" id="edit-api-key-has-full-access">
+                            Grant Full Access
+                        </label>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-api-key-full-access-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-api-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete API Key</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-api-key-message"></div>
+                <form>
+                    <input type="hidden" id="delete-api-key-id">
+                    <div class="field">
+                        <label class="label">Confirm API Key Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-api-key-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-api-key-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete API Key</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="api-keys-template">
+        {{#each apiKeys}}
+        <tr id="api-key-{{this.id}}">
+            <td style="padding: 30px;">
+                <span class="content is-medium" id="api-key-name-{{this.id}}">{{this.name}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger api-key-access-key-modal-btn" data-target="api-key-access-key-modal">
+                    <span class="icon"><i class="fas fa-key"></i></span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <span class="tag is-medium is-light" id="api-key-has-full-access-{{this.id}}">{{this.hasFullAccess}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light is-info js-modal-trigger edit-api-key-full-access-modal-btn"
+                    data-target="edit-api-key-full-access-modal">
+                    <span class="icon"><i class="fas fa-shield-alt"></i></span>
+                    <span>Full Access</span>
+                </button>
+                <a href="/actor-access?type=api-key&id={{this.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-user-shield"></i></span>
+                    <span>Permissions</span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-info is-light js-modal-trigger edit-api-key-modal-btn" data-target="edit-api-key-modal">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button data-id="{{this.id}}" class="button is-danger is-light js-modal-trigger delete-api-key-modal-btn" data-target="delete-api-key-modal">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-api-key-modal-btn" data-target="get-api-key-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const apiKeyApi = new ApiKeyApi();
+        const apiKeysTemplate = Handlebars.compile($("#api-keys-template").html());
+        $("#reset-api-key-access-key-confirmation-form").hide();
+
+        function renderApiKeys(page, size) {
+            apiKeyApi.listApiKeys(page, size, function (data) {
+                $("#api-keys").append(apiKeysTemplate({ apiKeys: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#add-api-key-btn").click(function (e) {
+                e.preventDefault();
+                let name = $("#add-api-key-name").val().trim();
+                let description = $("#add-api-key-description").val().trim();
+                let fullAccess = $("#add-api-key-full-access").is(":checked");
+
+                if (name === "") {
+                    displayError($("#add-api-key-message"), "API key name is required");
+                    return;
+                }
+
+                apiKeyApi.createApiKey(name, description, fullAccess, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-api-key-message"), "API key added successfully");
+                        $("#api-keys").prepend(apiKeysTemplate({ apiKeys: [data] }));
+                    } else {
+                        displayError($("#add-api-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-api-key-message"), data.responseJSON.message);
+                });
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+
+            renderApiKeys(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderApiKeys(currentPage, pageSize);
+            });
+
+            let body = $("body");
+            body.on("click", ".get-api-key-modal-btn", function () {
+                let apiKeyId = $(this).data("id");
+                apiKeyApi.getApiKey(apiKeyId, function (data) {
+                    $("#api-key-name").html(data.name);
+                    $("#api-key-description").html(data.description);
+                });
+            });
+            body.on("click", ".api-key-access-key-modal-btn", function () {
+                let apiKeyId = $(this).data("id");
+                $("#reset-api-key-access-key-id").val(apiKeyId);
+                apiKeyApi.getApiKeyAccessKey(apiKeyId, function (data) {
+                    if (data.hasOwnProperty("accessKey")) {
+                        $("#api-key-access-key").html(data.accessKey);
+                    } else {
+                        displayError($("#api-key-access-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#api-key-access-key-message"), data.responseJSON.message);
+                });
+            });
+            body.on("click", ".edit-api-key-modal-btn", function () {
+                let apiKeyId = $(this).data("id");
+                $("#edit-api-key-id").val(apiKeyId);
+                $("#edit-api-key-message").html("");
+
+                apiKeyApi.getApiKey(apiKeyId, function (data) {
+                    $("#edit-api-key-name").val(data.name);
+                    $("#edit-api-key-description").val(data.description);
+                    $("#edit-api-key-has-full-access").prop("checked", data.hasFullAccess);
+                });
+            });
+            body.on("click", ".edit-api-key-full-access-modal-btn", function () {
+                let apiKeyId = $(this).data("id");
+                $("#edit-api-key-full-access-id").val(apiKeyId);
+                $("#edit-api-key-full-access-message").html("");
+
+                apiKeyApi.getApiKey(apiKeyId, function (data) {
+                    $("#edit-api-key-has-full-access").prop("checked", data.hasFullAccess);
+                });
+            });
+            body.on("click", ".delete-api-key-modal-btn", function () {
+                $("#delete-api-key-id").val($(this).data("id"));
+                $("#delete-api-key-message").html("");
+            });
+
+            $("#edit-api-key-btn").click(function (e) {
+                e.preventDefault();
+                let apiKeyId = $("#edit-api-key-id").val().trim();
+                let name = $("#edit-api-key-name").val().trim();
+                let description = $("#edit-api-key-description").val().trim();
+
+                if (apiKeyId === "") {
+                    displayError($("#edit-api-key-message"), "API key is not selected");
+                    return;
+                }
+
+                if (name === "") {
+                    displayError($("#edit-api-key-message"), "API key name is required");
+                    return;
+                }
+
+                apiKeyApi.updateApiKey(apiKeyId, name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-api-key-message"), "Changes saved successfully");
+                        $("#api-key-name-" + apiKeyId).html(data.name);
+                    } else {
+                        displayError($("#edit-api-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-api-key-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#edit-api-key-full-access-btn").click(function (e) {
+                e.preventDefault();
+                let apiKeyId = $("#edit-api-key-full-access-id").val().trim();
+                let hasFullAccess = $("#edit-api-key-has-full-access").is(":checked");
+
+                if (apiKeyId === "") {
+                    displayError($("#edit-api-key-full-access-message"), "API key is not selected");
+                    return;
+                }
+
+                apiKeyApi.updateApiKeyFullAccess(apiKeyId, hasFullAccess, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-api-key-full-access-message"), "Changes saved successfully");
+                        $("#api-key-has-full-access-" + apiKeyId).html(data.hasFullAccess.toString());
+                    } else {
+                        displayError($("#edit-api-key-full-access-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-api-key-full-access-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-api-key-btn").click(function (e) {
+                e.preventDefault();
+                let apiKeyId = $("#delete-api-key-id").val().trim();
+                let confirmation = $("#delete-api-key-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-api-key-message"), "Please confirm deletion of the API key below");
+                    return;
+                }
+
+                apiKeyApi.deleteApiKey(apiKeyId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-api-key-message"), "API key deleted successfully");
+                        $("#api-key-" + apiKeyId).remove();
+                    } else {
+                        displayError($("#delete-api-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-api-key-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#reset-api-key-access-key-prompt-btn").click(function (e) {
+                e.preventDefault();
+                $("#reset-api-key-access-key-confirmation-form").show();
+            });
+
+            $("#reset-api-key-access-key-btn").click(function (e) {
+                e.preventDefault();
+                let apiKeyId = $("#reset-api-key-access-key-id").val().trim();
+                let confirmation = $("#reset-api-key-access-key-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#api-key-access-key-message"), "Please confirm reset of the API key access key below");
+                    return;
+                }
+
+                apiKeyApi.resetApiKeyAccessKey(apiKeyId, function (data) {
+                    if (data.hasOwnProperty("accessKey")) {
+                        displaySuccess($("#api-key-access-key-message"), "API key access key reset successfully");
+                        $("#api-key-access-key").val(data.accessKey);
+                    } else {
+                        displayError($("#api-key-access-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#api-key-access-key-message"), data.responseJSON.message);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

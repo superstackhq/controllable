@@ -2,6 +2,7 @@ package one.superstack.controllable.response;
 
 import one.superstack.controllable.enums.Permission;
 import one.superstack.controllable.model.App;
+import one.superstack.controllable.model.AppAccess;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -10,15 +11,15 @@ public class AppAccessResponse implements Serializable {
 
     private App app;
 
-    private Set<Permission> permissions;
+    private AppAccess access;
 
     public AppAccessResponse() {
 
     }
 
-    public AppAccessResponse(App app, Set<Permission> permissions) {
+    public AppAccessResponse(App app, AppAccess access) {
         this.app = app;
-        this.permissions = permissions;
+        this.access = access;
     }
 
     public App getApp() {
@@ -29,11 +30,11 @@ public class AppAccessResponse implements Serializable {
         this.app = app;
     }
 
-    public Set<Permission> getPermissions() {
-        return permissions;
+    public AppAccess getAccess() {
+        return access;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
+    public void setAccess(AppAccess access) {
+        this.access = access;
     }
 }

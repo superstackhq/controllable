@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Apps - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item is-active" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-12">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-9">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-rocket"></i></span>
+                                <span>&nbsp;&nbsp;Apps</span>
+                            </h3>
+                        </div>
+                        <div class="column is-3">
+                            <button class="button is-success is-medium js-modal-trigger" data-target="add-app-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New App</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Access Key</th>
+                                        <th>Targets</th>
+                                        <th>Permissions</th>
+                                        <th>Actions</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="apps">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Apps</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-app-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add App</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-app-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control has-icons-left">
+                            <input id="add-app-name" class="input is-medium" type="text" placeholder="New App Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-rocket"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-app-description"
+                                placeholder="New App Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-app-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New App</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-app-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="app-name"></h3>
+                    <hr>
+                    <p id="app-description"></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="app-access-key-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-key"></i></span>
+                    <span>Access Key</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="app-access-key-message"></div>
+                <textarea class="textarea is-medium" disabled id="app-access-key"></textarea>
+                <button class="button is-medium is-info" style="margin-top: 1rem;"
+                    id="reset-app-access-key-prompt-btn">Reset Access Key</button>
+                <div id="reset-app-access-key-confirmation-form" style="margin-top: 2rem;">
+                    <form>
+                        <input type="hidden" id="reset-app-access-key-id">
+                        <div class="field">
+                            <label class="label">Confirm Reset Of App Access Key</label>
+                            <div class="control has-icons-left">
+                                <input id="reset-app-access-key-confirmation" class="input is-medium" type="text"
+                                    placeholder="Enter 'yes' to confirm reset of access key">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <button class="button is-medium is-danger" id="reset-app-access-key-btn">Confirm Reset Of Access
+                            Key</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="edit-app-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify App</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-app-message"></div>
+                <form>
+                    <input type="hidden" id="edit-app-id">
+                    <div class="field">
+                        <label class="label">App Name</label>
+                        <div class="control has-icons-left">
+                            <input id="edit-app-name" class="input is-medium" type="text" placeholder="App Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-rocket"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-app-description"
+                                placeholder="App Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-app-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-app-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete App</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-app-message"></div>
+                <form>
+                    <input type="hidden" id="delete-app-id">
+                    <div class="field">
+                        <label class="label">Confirm App Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-app-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-app-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete App</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="target-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card" style="width: 1000px;">
+            <header class="modal-card-head">
+                <p class="modal-card-title">View App Targets</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <h4 class="title is-4" id="targets-title"></h4>
+                <hr>
+                <table class="table is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Permissions</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody id="targets"></tbody>
+                </table>
+                <button id="load-more-targets-btn" class="button is-light is-fullwidth">Load More Targets</button>
+            </section>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="apps-template">
+        {{#each apps}}
+        <tr id="app-{{this.id}}">
+            <td style="padding: 30px;">
+                <span class="content is-medium" id="app-name-{{this.id}}">{{this.name}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger app-access-key-modal-btn" data-target="app-access-key-modal">
+                    <span class="icon"><i class="fas fa-key"></i></span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <button data-type="COLLECTION" data-id="{{this.id}}" class="button is-light list-target-btn js-modal-trigger" data-target="target-modal">
+                    <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                    <span>Collections</span>
+                </button>
+                <button data-type="PROPERTY" data-id="{{this.id}}" class="button is-success is-light list-target-btn js-modal-trigger" data-target="target-modal">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/access?type=app&id={{this.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-info is-light js-modal-trigger edit-app-modal-btn" data-target="edit-app-modal">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button data-id="{{this.id}}" class="button is-danger is-light js-modal-trigger delete-app-modal-btn" data-target="delete-app-modal">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-app-modal-btn" data-target="get-app-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="targets-template">
+        {{#each targets}}
+        <tr>
+            <td style="padding: 30px;">
+                <span class="content is-medium">{{target.data.name}}{{target.data.key}}</span>
+            </td>
+            <td style="padding: 30px;">
+                {{#each access.permissions}}
+                <span class="tag is-medium is-light is-info">{{this}}</span>
+                {{/each}}
+            </td>
+            <td style="padding: 30px;">
+                <a href="{{page}}?id={{target.data.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                </a>
+            </td>
+            </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const appApi = new AppApi();
+        const appAccessApi = new AppAccessApi();
+
+        const collectionTarget = "COLLECTION";
+        const propertyTarget = "PROPERTY";
+
+        const appsTemplate = Handlebars.compile($("#apps-template").html());
+        const targetsTemplate = Handlebars.compile($("#targets-template").html());
+
+        $("#reset-app-access-key-confirmation-form").hide();
+
+        function renderApps(page, size) {
+            appApi.listApps(page, size, function (data) {
+                $("#apps").append(appsTemplate({ apps: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        function renderTargets(page, size, appId, type) {
+            appAccessApi.listAppTargets(appId, type, page, size, function (data) {
+                let page = "";
+                if (type == collectionTarget) {
+                    page = "collection"
+                } else if (type == propertyTarget) {
+                    page = "property-values";
+                }
+                for (i = 0; i < data.length; i++) {
+                    target = data[i];
+                    target.page = page;
+                }
+
+                $("#targets").append(targetsTemplate({ targets: data }));
+
+                if (data.length < size) {
+                    $("#load-more-targets-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#add-app-btn").click(function (e) {
+                e.preventDefault();
+                let name = $("#add-app-name").val().trim();
+                let description = $("#add-app-description").val().trim();
+
+                if (name === "") {
+                    displayError($("#add-app-message"), "App name is required");
+                    return;
+                }
+
+                appApi.createApp(name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-app-message"), "App added successfully");
+                        $("#apps").prepend(appsTemplate({ apps: [data] }));
+                    } else {
+                        displayError($("#add-app-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-app-message"), data.responseJSON.message);
+                });
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+
+            renderApps(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderApps(currentPage, pageSize);
+            });
+
+            let body = $("body");
+            body.on("click", ".get-app-modal-btn", function () {
+                let appId = $(this).data("id");
+                appApi.getApp(appId, function (data) {
+                    $("#app-name").html(data.name);
+                    $("#app-description").html(data.description);
+                });
+            });
+            body.on("click", ".app-access-key-modal-btn", function () {
+                let appId = $(this).data("id");
+                $("#reset-app-access-key-id").val(appId);
+                appApi.getAppAccessKey(appId, function (data) {
+
+                    if (data.hasOwnProperty("accessKey")) {
+                        $("#app-access-key").html(data.accessKey);
+                    } else {
+                        displayError($("#app-access-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#app-access-key-message"), data.responseJSON.message);
+                });
+            });
+            body.on("click", ".edit-app-modal-btn", function () {
+                let appId = $(this).data("id");
+                $("#edit-app-id").val(appId);
+                $("#edit-app-message").html("");
+
+                appApi.getApp(appId, function (data) {
+                    $("#edit-app-name").val(data.name);
+                    $("#edit-app-description").val(data.description);
+                });
+            });
+            body.on("click", ".delete-app-modal-btn", function () {
+                $("#delete-app-id").val($(this).data("id"));
+                $("#delete-app-message").html("");
+            });
+
+            $("#edit-app-btn").click(function (e) {
+                e.preventDefault();
+                let appId = $("#edit-app-id").val().trim();
+                let name = $("#edit-app-name").val().trim();
+                let description = $("#edit-app-description").val().trim();
+
+                if (appId === "") {
+                    displayError($("#edit-app-message"), "App is not selected");
+                    return;
+                }
+
+                if (name === "") {
+                    displayError($("#edit-app-message"), "App name is required");
+                    return;
+                }
+
+                appApi.updateApp(appId, name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-app-message"), "Changes saved successfully");
+                        $("#app-name-" + appId).html(data.name);
+                    } else {
+                        displayError($("#edit-app-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-app-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-app-btn").click(function (e) {
+                e.preventDefault();
+                let appId = $("#delete-app-id").val().trim();
+                let confirmation = $("#delete-app-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-app-message"), "Please confirm deletion of the app below");
+                    return;
+                }
+
+                appApi.deleteApp(appId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-app-message"), "App deleted successfully");
+                        $("#app-" + appId).remove();
+                    } else {
+                        displayError($("#delete-app-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-app-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#reset-app-access-key-prompt-btn").click(function (e) {
+                e.preventDefault();
+                $("#reset-app-access-key-confirmation-form").show();
+            });
+
+            $("#reset-app-access-key-btn").click(function (e) {
+                e.preventDefault();
+                let appId = $("#reset-app-access-key-id").val().trim();
+                let confirmation = $("#reset-app-access-key-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#app-access-key-message"), "Please confirm reset of the app access key below");
+                    return;
+                }
+
+                appApi.resetAppAccessKey(appId, function (data) {
+                    if (data.hasOwnProperty("accessKey")) {
+                        displaySuccess($("#app-access-key-message"), "App access key reset successfully");
+                        $("#app-access-key").val(data.accessKey);
+                    } else {
+                        displayError($("#app-access-key-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#app-access-key-message"), data.responseJSON.message);
+                });
+            });
+
+            let targetsCurrentPage = 0;
+            let targetsPageSize = 50;
+            let currentTargetType = null;
+            let currentTargetAppId = null;
+
+            body.on("click", ".list-target-btn", function (e) {
+                e.preventDefault();
+
+                currentTargetType = $(this).data("type");
+                currentTargetAppId = $(this).data("id");
+
+                let title = ""
+                if (currentTargetType == collectionTarget) {
+                    title = "Collections";
+                } else if (currentTargetType == propertyTarget) {
+                    title = "Properties";
+                }
+
+                $("#targets-title").html(title);
+
+                targetsCurrentPage = 0;
+                $("#load-more-targets-btn").show();
+                $("#targets").html("");
+                renderTargets(targetsCurrentPage, targetsPageSize, currentTargetAppId, currentTargetType);
+            });
+
+            $("#load-more-targets-btn").click(function (e) {
+                e.preventDefault();
+                targetsCurrentPage++;
+                renderTargets(targetsCurrentPage, targetsPageSize, currentTargetAppId, currentTargetType);
+            });
+        });
+    </script>
+</body>
+
+</html>

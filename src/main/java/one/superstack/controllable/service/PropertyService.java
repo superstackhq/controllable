@@ -69,7 +69,10 @@ public class PropertyService {
                 creator.getId());
 
         property = propertyRepository.save(property);
+
         accessService.add(new AccessRequest(TargetType.PROPERTY, property.getId(), creator.getType(), creator.getId(), AccessService.ALL_ENVIRONMENT, Set.of(Permission.ALL)), creator);
+        accessService.add(new AccessRequest(TargetType.PROPERTY, property.getId(), creator.getType(), creator.getId(), null, Set.of(Permission.ALL)), creator);
+
         return property;
     }
 
@@ -79,6 +82,10 @@ public class PropertyService {
 
     public List<Property> list(PropertyFetchRequest propertyFetchRequest, String organizationId, Pageable pageable) {
         return propertyRepository.findByNamespaceAndOrganizationId(propertyFetchRequest.getNamespace(), organizationId, pageable);
+    }
+
+    public Property get(String propertyId) throws Throwable {
+        return propertyRepository.findById(propertyId).orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Property not found"));
     }
 
     public Property get(String propertyId, String organizationId) throws Throwable {

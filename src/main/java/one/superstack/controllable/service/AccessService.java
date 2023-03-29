@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -52,15 +53,13 @@ public class AccessService {
                         .and("targetType").is(accessRequest.getTargetType())
                         .and("targetId").is(accessRequest.getTargetId())
                         .and("environmentId").is(accessRequest.getEnvironmentId())
-                        .and("organizationId").is(creator.getOrganizationId())
-                        .and("deleted").is(false)),
+                        .and("organizationId").is(creator.getOrganizationId())),
                 new Update()
                         .setOnInsert("actorType", accessRequest.getActorType())
                         .setOnInsert("actorId", accessRequest.getActorId())
                         .setOnInsert("targetType", accessRequest.getTargetType())
                         .setOnInsert("targetId", accessRequest.getTargetId())
                         .setOnInsert("environmentId", accessRequest.getEnvironmentId())
-                        .setOnInsert("deleted", false)
                         .setOnInsert("creatorId", creator.getId())
                         .setOnInsert("organizationId", creator.getOrganizationId())
                         .setOnInsert("createdOn", new Date())
@@ -81,8 +80,7 @@ public class AccessService {
                         .and("targetType").is(accessRequest.getTargetType())
                         .and("targetId").is(accessRequest.getTargetId())
                         .and("environmentId").is(accessRequest.getEnvironmentId())
-                        .and("organizationId").is(organizationId)
-                        .and("deleted").is(false)),
+                        .and("organizationId").is(organizationId)),
                 new Update()
                         .set("modifiedOn", new Date())
                         .pullAll("permissions", accessRequest.getPermissions().toArray()),
@@ -159,7 +157,7 @@ public class AccessService {
     }
 
     private Boolean checkPermissionForUserOnEnvironment(TargetType targetType, String targetId, String userId, String environmentId, Permission permission) {
-        Set<String> environmentIds = Set.of(environmentId, ALL_ENVIRONMENT);
+        Set<String> environmentIds = getEnvironmentIdsSet(environmentId);
         Set<Permission> permissions = Set.of(Permission.ALL, permission);
 
         if (accessRepository.existsByTargetTypeAndTargetIdAndActorTypeAndActorIdAndEnvironmentIdInAndPermissionsIn(targetType, targetId, ActorType.USER, userId, environmentIds, permissions)) {
@@ -175,13 +173,13 @@ public class AccessService {
     }
 
     private Boolean checkPermissionForApiKeyOnEnvironment(TargetType targetType, String targetId, String apiKeyId, String environmentId, Permission permission) {
-        Set<String> environmentIds = Set.of(environmentId, ALL_ENVIRONMENT);
+        Set<String> environmentIds = getEnvironmentIdsSet(environmentId);
         Set<Permission> permissions = Set.of(Permission.ALL, permission);
         return accessRepository.existsByTargetTypeAndTargetIdAndActorTypeAndActorIdAndEnvironmentIdInAndPermissionsIn(targetType, targetId, ActorType.API_KEY, apiKeyId, environmentIds, permissions);
     }
 
     private Boolean checkPermissionForUserOnAtLeastOneTargetOnEnvironment(TargetType targetType, Set<String> targetIds, String userId, String environmentId, Permission permission) {
-        Set<String> environmentIds = Set.of(environmentId, ALL_ENVIRONMENT);
+        Set<String> environmentIds = getEnvironmentIdsSet(environmentId);
         Set<Permission> permissions = Set.of(Permission.ALL, permission);
 
         if (accessRepository.existsByTargetTypeAndTargetIdInAndActorTypeAndActorIdAndEnvironmentIdInAndPermissionsIn(targetType, targetIds, ActorType.USER, userId, environmentIds, permissions)) {
@@ -197,8 +195,15 @@ public class AccessService {
     }
 
     private Boolean checkPermissionForApiKeyOnAtLeastOneTargetOnEnvironment(TargetType targetType, Set<String> targetIds, String apiKeyId, String environmentId, Permission permission) {
-        Set<String> environmentIds = Set.of(environmentId, ALL_ENVIRONMENT);
+        Set<String> environmentIds = getEnvironmentIdsSet(environmentId);
         Set<Permission> permissions = Set.of(Permission.ALL, permission);
         return accessRepository.existsByTargetTypeAndTargetIdInAndActorTypeAndActorIdAndEnvironmentIdInAndPermissionsIn(targetType, targetIds, ActorType.API_KEY, apiKeyId, environmentIds, permissions);
+    }
+
+    private Set<String> getEnvironmentIdsSet(String environmentId) {
+        Set<String> s = new HashSet<>();
+        s.add(environmentId);
+        s.add(ALL_ENVIRONMENT);
+        return s;
     }
 }

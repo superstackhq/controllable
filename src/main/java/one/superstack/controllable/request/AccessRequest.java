@@ -15,7 +15,6 @@ public class AccessRequest implements Serializable {
     @NotNull
     private TargetType targetType;
 
-    @NotBlank
     private String targetId;
 
     @NotNull

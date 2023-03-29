@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Manage Collection - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item is-active" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-10 is-offset-1">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-clipboard-list"></i>&nbsp;&nbsp;</span>
+                                <span id="name">Collection</span>
+                            </h3>
+                        </div>
+                        <div class="column is-2">
+                            <button class="button is-info is-medium js-modal-trigger"
+                                data-target="edit-collection-modal">
+                                <span class="icon"><i class="fas fa-edit"></i></span>
+                                <span>Modify</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <h4 class="title is-4">Description</h4>
+                            <div class="box" id="description"></div>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <h4 class="title is-4">Danger Zone</h4>
+                            <hr>
+                            <button class="button is-medium is-danger js-modal-trigger"
+                                data-target="delete-collection-modal">
+                                <span class="icon"><i class="fas fa-trash"></i></span>
+                                <span>Delete Collection</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="edit-collection-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify Collection</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-collection-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Collection Name</label>
+                        <div class="control has-icons-left">
+                            <input id="edit-collection-name" class="input is-medium" type="text"
+                                placeholder="Collection Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-rocket"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-collection-description"
+                                placeholder="Collection Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-collection-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-collection-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete Collection</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-collection-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Confirm Collection Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-collection-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-collection-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete Collection</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const collectionId = getQueryParameter("id");
+        const collectionApi = new CollectionApi();
+
+        $(document).ready(function () {
+            collectionApi.getCollection(collectionId, function (data) {
+                $("#name").html(data.name);
+                $("title").prepend(data.name + " - ");
+                $("#description").html(data.description);
+                $("#edit-collection-name").val(data.name);
+                $("#edit-collection-description").val(data.description);
+            });
+
+            $("#edit-collection-btn").click(function (e) {
+                e.preventDefault();
+
+                let name = $("#edit-collection-name").val().trim();
+                let description = $("#edit-collection-description").val().trim();
+
+                if (name === "") {
+                    displayError($("#edit-collection-message"), "Collection name is required");
+                    return;
+                }
+
+                collectionApi.updateCollection(collectionId, name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-collection-message"), "Changes saved successfully");
+                        $("#name").html(data.name);
+                        $("#description").html(data.description);
+                    } else {
+                        displayError($("#edit-collection-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-collection-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-collection-btn").click(function (e) {
+                e.preventDefault();
+                let confirmation = $("#delete-collection-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-collection-message"), "Please confirm deletion of the collection below");
+                    return;
+                }
+
+                collectionApi.deleteCollection(collectionId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        window.location = "/home";
+                    } else {
+                        displayError($("#delete-collection-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-collection-message"), data.responseJSON.message);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

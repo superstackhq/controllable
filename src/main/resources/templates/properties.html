@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Properties - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item is-active" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="max-width: 1800px;">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-12">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-list"></i></span>
+                                <span>&nbsp;&nbsp;Properties</span>
+                            </h3>
+                        </div>
+                        <div class=" column is-2">
+                            <button class="button is-success is-medium js-modal-trigger"
+                                data-target="add-property-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New Property</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Version</th>
+                                        <th>Info</th>
+                                        <th>Collections</th>
+                                        <th>Permissions</th>
+                                        <th>Actions</th>
+                                        <th>Values</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="properties">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Properties</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-property-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add Property</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-property-message"></div>
+                <form>
+                    <div class="field" id="namespace-levels">
+                        <div class="label">Namespace</div>
+                    </div>
+                    <button class="button is-success is-light" id="add-namespace-level-btn">Add Namespace Level</button>
+                    <hr>
+                    <div class="field">
+                        <label class="label">Key</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-key" class="input is-medium" type="text"
+                                placeholder="New Property's Key">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-list"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Version</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-version" class="input is-medium" type="text"
+                                placeholder="New Property's Version">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-tag"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-property-description"
+                                placeholder="New Property Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Data Type</label>
+                        <div class="control has-icons-left">
+                            <div class="select is-medium is-fullwidth">
+                                <select id="add-property-data-type">
+                                    <option value="STRING" selected>String</option>
+                                    <option value="FLOAT">Float</option>
+                                    <option value="INTEGER">Integer</option>
+                                    <option value="BOOLEAN">Boolean</option>
+                                    <option value="NULL">Null</option>
+                                    <option value="OBJECT">Object</option>
+                                    <option value="ARRAY">Array</option>
+                                </select>
+                            </div>
+                            <span class="icon is-medium is-left">
+                                <i class="fas fa-database"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="field" id="segment-tree-levels">
+                        <h6 class="title is-5" style="margin-top: 1rem;">
+                            <span class="icon"><i class="fas fa-th-list"></i></span>
+                            Segment Tree Levels
+                            </label>
+                    </div>
+                    <button class="button is-success is-light" id="add-segment-tree-level-btn">Add Segment Tree
+                        Level</button>
+                    <hr>
+                    <h6 class="title is-5" style="margin-top: 1rem;">
+                        <span class="icon"><i class="far fa-circle"></i></span>
+                        Constraints
+                    </h6>
+                    <div class="field">
+                        <label class="label">Minimum Value</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-constraint-min" class="input is-medium" type="number"
+                                placeholder="Minimum Data Value">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-window-minimize"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Maximum Value</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-constraint-max" class="input is-medium" type="number"
+                                placeholder="Maximum Data Value">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-window-maximize"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Minimum Length</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-constraint-min-length" class="input is-medium" type="number"
+                                placeholder="Minimum Data Length">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-window-minimize"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Maximum Length</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-constraint-max-length" class="input is-medium" type="number"
+                                placeholder="Maximum Data Length">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-window-maximize"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Pattern</label>
+                        <div class="control has-icons-left">
+                            <input id="add-property-constraint-pattern" class="input is-medium" type="text"
+                                placeholder="Data Pattern">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-star-of-life"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-property-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New Property</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-property-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="property-name"></h3>
+                    <span class="tag is-large is-success" id="property-version"></span>
+                    <hr>
+                    <h5 class="title is-5"><span class="icon"><i class="fas fa-info-circle"></i></span>Description</h5>
+                    <p id="property-description"></p>
+                    <hr>
+                    <h5 class="title is-5"><span class="icon"><i class="fas fa-database"></i></span>Data Type</h5>
+                    <p><span class="tag is-medium is-light" id="property-data-type"></span></p>
+                    <hr>
+                    <h5 class="title is-5"><span class="icon"><i class="fas fa-list-ol"></i></span>Segment Tree
+                        Structure
+                    </h5>
+                    <div id="segment-tree-info-levels"></div>
+                    <hr>
+                    <h5 class="title is-5"><span class="icon"><i class="far fa-circle"></i></span>Constraints</h5>
+                    <table class="table is-hoverable is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>Constraint</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Min</td>
+                                <td id="property-constraint-min"></td>
+                            </tr>
+                            <tr>
+                                <td>Max</td>
+                                <td id="property-constraint-max"></td>
+                            </tr>
+                            <tr>
+                                <td>Minimum Length</td>
+                                <td id="property-constraint-min-length"></td>
+                            </tr>
+                            <tr>
+                                <td>Maximum Length</td>
+                                <td id="property-constraint-max-length"></td>
+                            </tr>
+                            <tr>
+                                <td>Pattern</td>
+                                <td id="property-constraint-pattern"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="edit-property-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify Property</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-property-message"></div>
+                <form>
+                    <input type="hidden" id="edit-property-id">
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-property-description"
+                                placeholder="Property Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-property-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-property-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete Property</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-property-message"></div>
+                <form>
+                    <input type="hidden" id="delete-property-id">
+                    <div class="field">
+                        <label class="label">Confirm Property Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-property-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-property-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete Property</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="properties-template">
+        {{#each properties}}
+        <tr id="property-{{this.id}}">
+            <td style="padding: 30px;">
+                <div class="tag is-info is-light is-medium">{{this.namespaceString}}</div>
+                <div class="content is-medium" id="property-key-{{this.id}}" style="margin-top: 1rem;">{{this.key}}</div>
+            </td>
+            <td style="padding: 30px;">
+                <span class="content is-medium"><span class="tag is-medium is-light" id="property-version-{{this.id}}">{{this.version}}</span></span>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-property-modal-btn" data-target="get-property-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/property-collections?id={{this.id}}" class="button is-info is-light">
+                    <span class="icon"><i class="fas fa-clipboard-list"></i></span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <div class="dropdown is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button is-light" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span>Access</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a class="dropdown-item" href="/access?type=property&id={{this.id}}">
+                                <p>Management Access</p>
+                            </a>
+                            <a class="dropdown-item" href="/environment-access?type=property&id={{this.id}}">
+                                <p>Value Access</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="/property-apps?id={{this.id}}" class="button is-warning is-light">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-info is-light js-modal-trigger edit-property-modal-btn" data-target="edit-property-modal">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button data-id="{{this.id}}" class="button is-danger is-light js-modal-trigger delete-property-modal-btn" data-target="delete-property-modal">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/property-values?id={{ this.id }}" class="button is-success is-light">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Values</span>
+                </a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="segment-tree-level-template">
+        <label class="label" style="margin-top: 1rem;">Segment Tree Level #{{level}}</label>
+        <div class="control has-icons-left" style="margin-bottom: 0.5rem;">
+            <input id="add-property-segment-tree-level-name-{{level}}" class="input is-medium" type="text"
+                placeholder="Name">
+            <span class="icon is-left is-small">
+                <i class="fas fa-list-ol"></i>
+            </span>
+        </div>
+        <div class="control" style="margin-bottom: 0.5rem;">
+            <textarea class="textarea is-medium" id="add-property-segment-tree-level-description-{{level}}" placeholder="Description"></textarea>
+        </div>
+        <div class="control has-icons-left" style="margin-bottom: 0.5rem;">
+            <div class="select is-medium is-fullwidth">
+                <select id="add-property-segment-tree-level-data-type-{{level}}">
+                    <option value="STRING" selected>String</option>
+                    <option value="FLOAT">Float</option>
+                    <option value="INTEGER">Integer</option>
+                    <option value="BOOLEAN">Boolean</option>
+                </select>
+            </div>
+            <span class="icon is-medium is-left">
+                <i class="fas fa-database"></i>
+            </span>
+        </div>
+    </script>
+    <script type="text/x-handlebars-template" id="namespace-level-template">
+        <div class="control has-icons-left" style="margin-bottom: 0.5rem;">
+            <input id="add-property-namespace-level-{{level}}" class="input is-medium" type="text"
+                placeholder="Level #{{level}}">
+            <span class="icon is-left is-small">
+                <i class="far fa-folder"></i>
+            </span>
+        </div>
+    </script>
+    <script type="text/x-handlebars-template" id="segment-tree-level-info-template">
+        <h6 class="title is-6" style="margin-top: 1rem;">Segment Tree Level #{{levelNumber}}</h6>
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title">
+                {{ level.name }}
+                </p>
+                <button class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+                </button>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    {{ level.description }}
+                </div>
+            </div>
+            <footer class="card-footer">
+                <span class="tag is-light is-medium" style="margin: 1rem;">{{ level.dataType }}</span>
+            </footer>
+        </div>
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const propertyApi = new PropertyApi();
+        const propertiesTemplate = Handlebars.compile($("#properties-template").html());
+        const segmentTreeLevelTemplate = Handlebars.compile($("#segment-tree-level-template").html());
+        const namespaceLevelTemplate = Handlebars.compile($("#namespace-level-template").html());
+        const segmentTreeLevelInfoTemplate = Handlebars.compile($("#segment-tree-level-info-template").html());
+
+        function renderProperties(page, size) {
+            propertyApi.listProperties(page, size, function (data) {
+                for (i = 0; i < data.length; i++) {
+                    let property = data[i];
+                    property.namespaceString = "Root Namespace";
+                    if (property.namespace != null) {
+                        property.namespaceString = property.namespace.join("/");
+                    }
+                }
+                $("#properties").append(propertiesTemplate({ properties: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let numSegmentTreeLevel = 1;
+            $("#segment-tree-levels").append(segmentTreeLevelTemplate({ level: numSegmentTreeLevel }));
+            $("#add-segment-tree-level-btn").click(function (e) {
+                e.preventDefault();
+                numSegmentTreeLevel++;
+                $("#segment-tree-levels").append(segmentTreeLevelTemplate({ level: numSegmentTreeLevel }));
+            });
+
+            let numNamespaceLevel = 1;
+            $("#namespace-levels").append(namespaceLevelTemplate({ level: numNamespaceLevel }));
+            $("#add-namespace-level-btn").click(function (e) {
+                e.preventDefault();
+                numNamespaceLevel++;
+                $("#namespace-levels").append(namespaceLevelTemplate({ level: numNamespaceLevel }));
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+            renderProperties(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderProperties(currentPage, pageSize);
+            });
+
+            $("#add-property-btn").click(function (e) {
+                e.preventDefault();
+
+                let key = $("#add-property-key").val().trim();
+                let description = $("#add-property-description").val().trim();
+                let version = $("#add-property-version").val().trim();
+                let dataType = $("#add-property-data-type").val().trim();
+
+                let min = $("#add-property-constraint-min").val().trim();
+                let max = $("#add-property-constraint-max").val().trim();
+                let minLength = $("#add-property-constraint-min-length").val().trim();
+                let maxLength = $("#add-property-constraint-max-length").val().trim();
+                let pattern = $("#add-property-constraint-pattern").val();
+
+                if (dataType == "FLOAT") {
+                    if (min !== "") {
+                        min = parseFloat(min);
+                    }
+
+                    if (max !== "") {
+                        max = parseFloat(max);
+                    }
+                }
+
+                if (dataType == "INTEGER") {
+                    if (min !== "") {
+                        min = parseInt(min, 10);
+                    }
+
+                    if (max !== "") {
+                        max = parseInt(max, 10);
+                    }
+                }
+
+                if (min === "") {
+                    min = null;
+                }
+                if (max === "") {
+                    max = null;
+                }
+
+                if (minLength !== "") {
+                    minLength = parseInt(minLength, 10);
+                } else {
+                    minLength = null;
+                }
+
+                if (maxLength !== "") {
+                    maxLength = parseInt(maxLength, 10);
+                } else {
+                    maxLength = null;
+                }
+
+                if (pattern === "") {
+                    pattern = null;
+                }
+
+                let constraints = {
+                    "min": min,
+                    "max": max,
+                    "minLength": minLength,
+                    "maxLength": maxLength,
+                    "pattern": pattern
+                }
+
+                let namespaceLevels = [];
+
+                for (i = 1; i <= numNamespaceLevel; i++) {
+                    let namespace = $("#add-property-namespace-level-" + i).val().trim();
+
+                    if (namespace === "") {
+                        continue;
+                    }
+
+                    namespaceLevels.push(namespace);
+                }
+
+                let segmentTreeLevels = [];
+
+                for (i = 1; i <= numSegmentTreeLevel; i++) {
+                    let name = $("#add-property-segment-tree-level-name-" + i).val().trim();
+
+                    if (name === "") {
+                        continue;
+                    }
+
+                    let description = $("#add-property-segment-tree-level-description-" + i).val().trim();
+                    let dataType = $("#add-property-segment-tree-level-data-type-" + i).val().trim();
+
+                    segmentTreeLevels.push({
+                        name: name,
+                        description: description,
+                        dataType: dataType
+                    });
+                }
+
+                let segmentTreeStructure = { levels: segmentTreeLevels };
+
+                if (key === "") {
+                    displayError($("#add-property-message"), "Property key is required");
+                    return;
+                }
+
+                propertyApi.createProperty(namespaceLevels, key, version, description, dataType, segmentTreeStructure, constraints, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-property-message"), "Property added successfully");
+                        data.namespaceString = "Root Namespace";
+                        if (data.namespace != null) {
+                            data.namespaceString = data.namespace.join("/");
+                        }
+
+                        $("#properties").prepend(propertiesTemplate({ properties: [data] }));
+                    } else {
+                        displayError($("#add-property-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-property-message"), data.responseJSON.message);
+                });
+            });
+
+            let body = $("body");
+
+            body.on("click", ".get-property-modal-btn", function () {
+                let propertyId = $(this).data("id");
+                propertyApi.getProperty(propertyId, function (data) {
+                    $("#property-name").html(data.name);
+                    $("#property-description").html(data.description);
+                    $("#property-version").html(data.version);
+                    $("#property-data-type").html(data.dataType);
+                    $("#property-constraint-min").html(data.constraints.min);
+                    $("#property-constraint-max").html(data.constraints.max);
+                    $("#property-constraint-min-length").html(data.constraints.minLength);
+                    $("#property-constraint-max-length").html(data.constraints.maxLength);
+                    $("#property-constraint-pattern").html(data.constraints.pattern);
+
+                    let segmentTreeStructure = data.segmentTreeStructure;
+
+                    if (segmentTreeStructure != null) {
+                        let segmentTreeLevels = segmentTreeStructure.levels;
+
+                        if (segmentTreeLevels != null && segmentTreeLevels.length > 0) {
+                            $("#segment-tree-info-levels").html("");
+                            for (let i = 0; i < segmentTreeLevels.length; i++) {
+                                $("#segment-tree-info-levels").append(segmentTreeLevelInfoTemplate({ levelNumber: i + 1, level: segmentTreeLevels[i] }));
+                            }
+                        }
+                    }
+                });
+            });
+
+            body.on("click", ".edit-property-modal-btn", function () {
+                let propertyId = $(this).data("id");
+                $("#edit-property-id").val(propertyId);
+                $("#edit-property-message").html("");
+
+                propertyApi.getProperty(propertyId, function (data) {
+                    $("#edit-property-description").val(data.description);
+                });
+            });
+
+            body.on("click", ".delete-property-modal-btn", function () {
+                $("#delete-property-id").val($(this).data("id"));
+                $("#delete-property-message").html("");
+            });
+
+            $("#edit-property-btn").click(function (e) {
+                e.preventDefault();
+                let propertyId = $("#edit-property-id").val().trim();
+                let description = $("#edit-property-description").val().trim();
+
+                if (propertyId === "") {
+                    displayError($("#edit-property-message"), "Property is not selected");
+                    return;
+                }
+
+                propertyApi.updateProperty(propertyId, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-property-message"), "Changes saved successfully");
+                    } else {
+                        displayError($("#edit-property-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-property-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-property-btn").click(function (e) {
+                e.preventDefault();
+                let propertyId = $("#delete-property-id").val().trim();
+                let confirmation = $("#delete-property-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-property-message"), "Please confirm deletion of the property below");
+                    return;
+                }
+
+                propertyApi.deleteProperty(propertyId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-property-message"), "Property deleted successfully");
+                        $("#property-" + propertyId).remove();
+                    } else {
+                        displayError($("#delete-property-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-property-message"), data.responseJSON.message);
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>

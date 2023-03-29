@@ -74,6 +74,10 @@ public class AppService {
         return appRepository.findByIdIn(appIds);
     }
 
+    public App get(String appId) throws Throwable {
+        return appRepository.findById(appId).orElseThrow((Supplier<Throwable>) () -> new NotFoundException("App not found"));
+    }
+
     public App get(String appId, String organizationId) throws Throwable {
         return appRepository.findByIdAndOrganizationId(appId, organizationId)
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("App not found"));
@@ -108,13 +112,15 @@ public class AppService {
         return new AccessKeyResponse(get(appId, organizationId).getAccessKey());
     }
 
-    public App resetAccessKey(String appId, String organizationId) throws Throwable {
+    public AccessKeyResponse resetAccessKey(String appId, String organizationId) throws Throwable {
         App app = get(appId, organizationId);
 
         app.setAccessKey(Random.generateRandomString(128));
         app.setModifiedOn(new Date());
 
-        return appRepository.save(app);
+        app = appRepository.save(app);
+
+        return new AccessKeyResponse(app.getAccessKey());
     }
 
     public Boolean exists(String appId, String organizationId) {

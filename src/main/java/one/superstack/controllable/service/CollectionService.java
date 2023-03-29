@@ -51,7 +51,10 @@ public class CollectionService {
                 creator.getId());
 
         collection = collectionRepository.save(collection);
+
         accessService.add(new AccessRequest(TargetType.COLLECTION, collection.getId(), ActorType.USER, creator.getId(), AccessService.ALL_ENVIRONMENT, Set.of(Permission.ALL)), creator);
+        accessService.add(new AccessRequest(TargetType.COLLECTION, collection.getId(), ActorType.USER, creator.getId(), null, Set.of(Permission.ALL)), creator);
+
         return collection;
     }
 
@@ -66,6 +69,10 @@ public class CollectionService {
 
     public List<Collection> get(List<String> collectionIds) {
         return collectionRepository.findByIdIn(collectionIds);
+    }
+
+    public Collection get(String collectionId) throws Throwable {
+        return collectionRepository.findById(collectionId).orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Collection not found"));
     }
 
     public Collection get(String collectionId, String organizationId) throws Throwable {

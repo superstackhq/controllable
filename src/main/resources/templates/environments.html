@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Environments - Controllable</title>
+    <link rel="stylesheet" href="/bulma/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script type="text/javascript">
+        if (!localStorage.getItem("token")) {
+            window.location = "/";
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="icon">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+                <span><strong>Controllable</strong></span>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/home">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Home</span>
+                </a>
+                <a class="navbar-item" href="/properties">
+                    <span class="icon"><i class="fas fa-list"></i></span>
+                    <span>Properties</span>
+                </a>
+                <a class="navbar-item" href="/apps">
+                    <span class="icon"><i class="fas fa-rocket"></i></span>
+                    <span>Apps</span>
+                </a>
+                <a class="navbar-item is-active" href="/environments">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Environments</span>
+                </a>
+                <a class="navbar-item" href="https://discord.gg/dCfZXpWvdZ" target="_blank">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>Community</span>
+                </a>
+                <a class="navbar-item" href="https://docs.controllable.in" target="_blank">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Docs</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Manage</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/users">
+                            <span class="icon"><i class="fas fa-user"></i></span>
+                            <span>Users</span>
+                        </a>
+                        <a class="navbar-item" href="/groups">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Groups</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/account">
+                            <span class="icon"><i class="fas fa-user-cog"></i></span>
+                            <span>Account</span>
+                        </a>
+                        <a class="navbar-item" href="/organization">
+                            <span class="icon"><i class="fas fa-users-cog"></i></span>
+                            <span>Organization</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="/api-access">
+                            <span class="icon"><i class="fas fa-code"></i></span>
+                            <span>API Access</span>
+                        </a>
+                    </div>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="columns" style="margin-top: 5rem;">
+            <div class="column is-10 is-offset-1">
+                <div class="box">
+                    <div class="columns">
+                        <div class="column is-9">
+                            <h3 class="title is-2">
+                                <span class="icon"><i class="fas fa-server"></i></span>
+                                <span>&nbsp;&nbsp;Environments</span>
+                            </h3>
+                        </div>
+                        <div class="column is-3">
+                            <button class="button is-success is-medium js-modal-trigger"
+                                data-target="add-environment-modal">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>New Environment</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <div class="column is-12">
+                            <hr>
+                            <table class="table is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Permissions</th>
+                                        <th>Actions</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="environments">
+                                </tbody>
+                            </table>
+                            <button id="load-more-btn" class="button is-light is-fullwidth">Load More
+                                Environments</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-environment-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Add Environment</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="add-environment-message"></div>
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control has-icons-left">
+                            <input id="add-environment-name" class="input is-medium" type="text"
+                                placeholder="New Environment Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-server"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="add-environment-description"
+                                placeholder="New Environment Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-success" id="add-environment-btn">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Add New Environment</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="get-environment-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                    <span>Info</span>
+                </p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content is-medium">
+                    <h3 id="environment-name"></h3>
+                    <hr>
+                    <p id="environment-description"></p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="edit-environment-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modify Environment</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="edit-environment-message"></div>
+                <form>
+                    <input type="hidden" id="edit-environment-id">
+                    <div class="field">
+                        <label class="label">Environment Name</label>
+                        <div class="control has-icons-left">
+                            <input id="edit-environment-name" class="input is-medium" type="text"
+                                placeholder="Environment Name">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-server"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea is-medium" id="edit-environment-description"
+                                placeholder="Environment Description"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-info" id="edit-environment-btn">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Save Changes</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <div id="delete-environment-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Delete Environment</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div id="delete-environment-message"></div>
+                <form>
+                    <input type="hidden" id="delete-environment-id">
+                    <div class="field">
+                        <label class="label">Confirm Environment Deletion</label>
+                        <div class="control has-icons-left">
+                            <input id="delete-environment-confirmation" class="input is-medium" type="text"
+                                placeholder="Enter 'yes' to confirm deletion">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-medium is-danger" id="delete-environment-btn">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete Environment</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script type="text/x-handlebars-template" id="environments-template">
+        {{#each environments}}
+        <tr id="environment-{{this.id}}">
+            <td style="padding: 30px;">
+                <span class="content is-medium" id="environment-name-{{this.id}}">{{this.name}}</span>
+            </td>
+            <td style="padding: 30px;">
+                <a href="/access?type=environment&id={{this.id}}" class="button is-light">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                    <span>Access</span>
+                </a>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-info is-light js-modal-trigger edit-environment-modal-btn" data-target="edit-environment-modal">
+                    <span class="icon"><i class="fas fa-edit"></i></span>
+                    <span>Modify</span>
+                </button>
+                <button data-id="{{this.id}}" class="button is-danger is-light js-modal-trigger delete-environment-modal-btn" data-target="delete-environment-modal">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Delete</span>
+                </button>
+            </td>
+            <td style="padding: 30px;">
+                <button data-id="{{this.id}}" class="button is-light js-modal-trigger get-environment-modal-btn" data-target="get-environment-modal">
+                    <span class="icon"><i class="fas fa-info-circle"></i></span>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="/jquery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="/handlebars/handlebars.min-v4.7.7.js"></script>
+    <script src="https://kit.fontawesome.com/2b4d084450.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript">
+        const environmentApi = new EnvironmentApi();
+        const environmentsTemplate = Handlebars.compile($("#environments-template").html());
+
+        function renderEnvironments(page, size) {
+            environmentApi.listEnvironments(page, size, function (data) {
+                $("#environments").append(environmentsTemplate({ environments: data }));
+                if (data.length < size) {
+                    $("#load-more-btn").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#add-environment-btn").click(function (e) {
+                e.preventDefault();
+                let name = $("#add-environment-name").val().trim();
+                let description = $("#add-environment-description").val().trim();
+
+                if (name === "") {
+                    displayError($("#add-environment-message"), "Environment name is required");
+                    return;
+                }
+
+                environmentApi.createEnvironment(name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#add-environment-message"), "Environment added successfully");
+                        $("#environments").prepend(environmentsTemplate({ environments: [data] }));
+                    } else {
+                        displayError($("#add-environment-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#add-environment-message"), data.responseJSON.message);
+                });
+            });
+
+            let currentPage = 0;
+            let pageSize = 50;
+
+            renderEnvironments(currentPage, pageSize);
+            $("#load-more-btn").click(function (e) {
+                e.preventDefault();
+                currentPage++;
+                renderEnvironments(currentPage, pageSize);
+            });
+
+            let body = $("body");
+            body.on("click", ".get-environment-modal-btn", function () {
+                let environmentId = $(this).data("id");
+                environmentApi.getEnvironment(environmentId, function (data) {
+                    $("#environment-name").html(data.name);
+                    $("#environment-description").html(data.description);
+                });
+            });
+            body.on("click", ".edit-environment-modal-btn", function () {
+                let environmentId = $(this).data("id");
+                $("#edit-environment-id").val(environmentId);
+                $("#edit-environment-message").html("");
+
+                environmentApi.getEnvironment(environmentId, function (data) {
+                    $("#edit-environment-name").val(data.name);
+                    $("#edit-environment-description").val(data.description);
+                });
+            });
+            body.on("click", ".delete-environment-modal-btn", function () {
+                $("#delete-environment-id").val($(this).data("id"));
+                $("#delete-environment-message").html("");
+            });
+
+            $("#edit-environment-btn").click(function (e) {
+                e.preventDefault();
+                let environmentId = $("#edit-environment-id").val().trim();
+                let name = $("#edit-environment-name").val().trim();
+                let description = $("#edit-environment-description").val().trim();
+
+                if (environmentId === "") {
+                    displayError($("#edit-environment-message"), "Environment is not selected");
+                    return;
+                }
+
+                if (name === "") {
+                    displayError($("#edit-environment-message"), "Environment name is required");
+                    return;
+                }
+
+                environmentApi.updateEnvironment(environmentId, name, description, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#edit-environment-message"), "Changes saved successfully");
+                        $("#environment-name-" + environmentId).html(data.name);
+                    } else {
+                        displayError($("#edit-environment-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#edit-environment-message"), data.responseJSON.message);
+                });
+            });
+
+            $("#delete-environment-btn").click(function (e) {
+                e.preventDefault();
+                let environmentId = $("#delete-environment-id").val().trim();
+                let confirmation = $("#delete-environment-confirmation").val();
+
+                if (confirmation !== "yes") {
+                    displayError($("#delete-environment-message"), "Please confirm deletion of the environment below");
+                    return;
+                }
+
+                environmentApi.deleteEnvironment(environmentId, function (data) {
+                    if (data.hasOwnProperty("id")) {
+                        displaySuccess($("#delete-environment-message"), "Environment deleted successfully");
+                        $("#environment-" + environmentId).remove();
+                    } else {
+                        displayError($("#delete-environment-message"), data.message);
+                    }
+                }, function (data) {
+                    displayError($("#delete-environment-message"), data.responseJSON.message);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
