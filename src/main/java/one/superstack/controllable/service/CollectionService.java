@@ -52,7 +52,7 @@ public class CollectionService {
 
         collection = collectionRepository.save(collection);
 
-        accessService.add(new AccessRequest(TargetType.COLLECTION, collection.getId(), ActorType.USER, creator.getId(), AccessService.ALL_ENVIRONMENT, Set.of(Permission.ALL)), creator);
+        accessService.add(new AccessRequest(TargetType.COLLECTION, collection.getId(), ActorType.USER, creator.getId(), AccessService.ANY_ENVIRONMENT, Set.of(Permission.ALL)), creator);
         accessService.add(new AccessRequest(TargetType.COLLECTION, collection.getId(), ActorType.USER, creator.getId(), null, Set.of(Permission.ALL)), creator);
 
         return collection;

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 public class AccessService {
 
-    public static final String ALL_ENVIRONMENT = "ALL";
+    public static final String ANY_ENVIRONMENT = "ANY";
 
     private final AccessRepository accessRepository;
 
@@ -203,7 +203,7 @@ public class AccessService {
     private Set<String> getEnvironmentIdsSet(String environmentId) {
         Set<String> s = new HashSet<>();
         s.add(environmentId);
-        s.add(ALL_ENVIRONMENT);
+        s.add(ANY_ENVIRONMENT);
         return s;
     }
 }

@@ -8,10 +8,7 @@ import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.Property;
 import one.superstack.controllable.pojo.PropertyReference;
 import one.superstack.controllable.repository.PropertyRepository;
-import one.superstack.controllable.request.AccessRequest;
-import one.superstack.controllable.request.PropertyCreationRequest;
-import one.superstack.controllable.request.PropertyFetchRequest;
-import one.superstack.controllable.request.PropertyUpdateRequest;
+import one.superstack.controllable.request.*;
 import one.superstack.controllable.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +69,12 @@ public class PropertyService {
             namespaceService.register(propertyCreationRequest.getNamespace(), creator.getOrganizationId());
         }
 
+        if (null != propertyCreationRequest.getSegmentTreeStructure()) {
+            if (null == propertyCreationRequest.getSegmentTreeStructure().getLevels() || propertyCreationRequest.getSegmentTreeStructure().getLevels().isEmpty()) {
+                propertyCreationRequest.setSegmentTreeStructure(null);
+            }
+        }
+
         Property property = new Property(propertyCreationRequest.getNamespace(),
                 propertyCreationRequest.getKey(),
                 propertyCreationRequest.getVersion(),
@@ -85,7 +88,7 @@ public class PropertyService {
 
         property = propertyRepository.save(property);
 
-        accessService.add(new AccessRequest(TargetType.PROPERTY, property.getId(), creator.getType(), creator.getId(), AccessService.ALL_ENVIRONMENT, Set.of(Permission.ALL)), creator);
+        accessService.add(new AccessRequest(TargetType.PROPERTY, property.getId(), creator.getType(), creator.getId(), AccessService.ANY_ENVIRONMENT, Set.of(Permission.ALL)), creator);
         accessService.add(new AccessRequest(TargetType.PROPERTY, property.getId(), creator.getType(), creator.getId(), null, Set.of(Permission.ALL)), creator);
 
         return property;

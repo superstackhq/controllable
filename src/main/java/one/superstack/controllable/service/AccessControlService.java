@@ -59,7 +59,7 @@ public class AccessControlService {
         }
 
         if (null != accessRequest.getEnvironmentId()) {
-            if (!AccessService.ALL_ENVIRONMENT.equals(accessRequest.getEnvironmentId())) {
+            if (!AccessService.ANY_ENVIRONMENT.equals(accessRequest.getEnvironmentId())) {
                 if (!environmentService.exists(accessRequest.getEnvironmentId(), creator.getOrganizationId())) {
                     throw new NotFoundException("Environment not found");
                 }

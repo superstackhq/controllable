@@ -47,6 +47,8 @@ public class PropertyValueService {
 
     private final MongoTemplate mongoTemplate;
 
+    public static final String DEFAULT_SEGMENT = "DEFAULT";
+
     @Autowired
     public PropertyValueService(PropertyValueRepository propertyValueRepository, PropertyService propertyService, PropertyValueLogService propertyValueLogService, EnvironmentService environmentService, MongoTemplate mongoTemplate) {
         this.propertyValueRepository = propertyValueRepository;
@@ -164,7 +166,11 @@ public class PropertyValueService {
         }
 
         criteria.orOperator(propertyValueReferenceCriteriaList);
-        return mongoTemplate.find(Query.query(criteria), PropertyValue.class);
+        return get(Query.query(criteria));
+    }
+
+    public List<PropertyValue> get(Query query) {
+        return mongoTemplate.find(query, PropertyValue.class);
     }
 
     public PropertyValue update(String propertyValueId, Property property, Environment environment, PropertyValueUpdateRequest propertyValueUpdateRequest, PropertyActor propertyActor) throws Throwable {
