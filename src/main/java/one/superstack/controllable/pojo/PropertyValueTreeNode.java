@@ -3,6 +3,8 @@ package one.superstack.controllable.pojo;
 import one.superstack.controllable.model.PropertyValue;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,8 @@ public class PropertyValueTreeNode implements Serializable {
     private Map<String, PropertyValueTreeNode> children;
 
     public PropertyValueTreeNode() {
-
+        this.values = new ArrayList<>();
+        this.children = new HashMap<>();
     }
 
     public PropertyValueTreeNode(List<PropertyValue> values, Map<String, PropertyValueTreeNode> children) {

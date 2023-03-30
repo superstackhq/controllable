@@ -1,6 +1,8 @@
 package one.superstack.controllable.executor;
 
 import one.superstack.controllable.auth.app.AuthenticatedApp;
+import one.superstack.controllable.embedded.Segment;
+import one.superstack.controllable.embedded.SegmentPathComponent;
 import one.superstack.controllable.embedded.SegmentTreeLevel;
 import one.superstack.controllable.model.Property;
 import one.superstack.controllable.model.PropertyValue;
@@ -20,6 +22,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,8 +103,50 @@ public class ReadPropertyExecutor implements PropertyExecutor {
     }
 
     private PropertyValueTrees constructTrees(List<PropertyValue> propertyValues) {
-        // TODO
-        return null;
+        Map<String, PropertyValueTreeNode> roots = new HashMap<>();
+
+        for (PropertyValue propertyValue : propertyValues) {
+            String propertyId = propertyValue.getPropertyId();
+            Segment segment = propertyValue.getSegment();
+
+            // Fetch the root node for the property
+            PropertyValueTreeNode rootNode = roots.getOrDefault(propertyId, null);
+
+            if (rootNode == null) {
+                // If root is not initialized for property, then initialize it
+                rootNode = new PropertyValueTreeNode();
+                roots.put(propertyId, rootNode);
+            }
+
+            // Traverse the segment tree from the root
+            PropertyValueTreeNode currentNode = rootNode;
+
+            if (null != segment && null != segment.getPath() && !segment.getPath().isEmpty()) {
+                for (SegmentPathComponent segmentPathComponent : segment.getPath()) {
+                    String segmentPathComponentValue = null;
+                    if (null != segmentPathComponent.getValue()) {
+                        segmentPathComponentValue = segmentPathComponent.getValue().toString();
+                    }
+
+                    // Fetch the child node based on the segment
+                    PropertyValueTreeNode childNode = currentNode.getChildren().getOrDefault(segmentPathComponentValue, null);
+
+                    if (null == childNode) {
+                        // If child not is not initialized, initialize it
+                        childNode = new PropertyValueTreeNode();
+                        currentNode.getChildren().put(segmentPathComponentValue, childNode);
+                    }
+
+                    // Set child node as the current
+                    currentNode = childNode;
+                }
+            }
+
+            // Append the property value at the last traversed node
+            currentNode.getValues().add(propertyValue);
+        }
+
+        return new PropertyValueTrees(roots);
     }
 
     private BulkPropertyExecutionResponse evaluateTrees(AugmentedBulkPropertyExecutionRequest request, PropertyValueTrees valueTrees) {
