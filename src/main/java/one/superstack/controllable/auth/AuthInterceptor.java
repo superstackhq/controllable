@@ -109,7 +109,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         String tokenType = authorizationComponents[0];
-        if (!tokenType.equals(BEARER_PREFIX) && !tokenType.equals(API_KEY_PREFIX)) {
+        if (!tokenType.equals(BEARER_PREFIX) && !tokenType.equals(API_KEY_PREFIX) && !tokenType.equals(APP_KEY_PREFIX)) {
             throw new InvalidTokenException();
         }
 

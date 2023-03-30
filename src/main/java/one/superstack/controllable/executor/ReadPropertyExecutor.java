@@ -261,7 +261,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
         // The one with the rule gets higher priority
         if (null != valueWithPassingRule) {
-            return valueWithEmptyRule;
+            return valueWithPassingRule;
         }
 
         return valueWithEmptyRule;
