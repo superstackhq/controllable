@@ -82,7 +82,7 @@ public class PropertyExecutionService {
                 request.getProperty().getKey(),
                 request.getProperty().getVersion())).collect(Collectors.toSet());
 
-        List<Property> properties = propertyService.getByReferences(propertyReferences, app.getOrganizationId());
+        List<Property> properties = propertyService.get(propertyReferences, app.getOrganizationId());
 
         if (properties.size() != propertyReferences.size()) {
             throw new NotFoundException("All properties not found");

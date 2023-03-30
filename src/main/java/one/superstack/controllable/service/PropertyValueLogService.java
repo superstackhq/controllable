@@ -1,11 +1,15 @@
 package one.superstack.controllable.service;
 
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
+import one.superstack.controllable.enums.ChangeType;
 import one.superstack.controllable.exception.NotFoundException;
+import one.superstack.controllable.model.PropertyValue;
 import one.superstack.controllable.model.PropertyValueLog;
 import one.superstack.controllable.pojo.PropertyActor;
 import one.superstack.controllable.pojo.PropertyActorReference;
 import one.superstack.controllable.repository.PropertyValueLogRepository;
 import one.superstack.controllable.response.PropertyValueLogResponse;
+import one.superstack.controllable.util.ActorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -37,7 +41,7 @@ public class PropertyValueLogService {
 
     @Async
     public void asyncLog(PropertyValueLog log) {
-        propertyValueLogRepository.save(log);
+        log(log);
     }
 
     public void log(PropertyValueLog log) {
@@ -64,5 +68,30 @@ public class PropertyValueLogService {
     public PropertyValueLog get(String propertyValueLogId, String propertyValueId, String propertyId, String environmentId, String organizationId) throws Throwable {
         return propertyValueLogRepository.findByIdAndPropertyValueIdAndPropertyIdAndEnvironmentIdAndOrganizationId(propertyValueLogId,
                 propertyValueId, propertyId, environmentId, organizationId).orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Property value log not found"));
+    }
+
+
+    public void logDeletes(List<PropertyValue> propertyValues, AuthenticatedActor actor) {
+        logDeletes(propertyValues, new PropertyActor(ActorUtil.convert(actor.getType()), actor.getId(), null));
+    }
+
+    public void logDeletes(List<PropertyValue> propertyValues, PropertyActor actor) {
+        List<PropertyValueLog> logs = new ArrayList<>();
+
+        for (PropertyValue propertyValue : propertyValues) {
+            logs.add(new PropertyValueLog(ChangeType.DELETE,
+                    null,
+                    propertyValue.getId(),
+                    propertyValue.getPropertyId(),
+                    propertyValue.getEnvironmentId(),
+                    propertyValue.getSegment(),
+                    propertyValue.getRule(),
+                    propertyValue.getValue(),
+                    propertyValue.getOrganizationId(),
+                    actor.getType(),
+                    actor.getReferenceId()));
+        }
+
+        log(logs);
     }
 }

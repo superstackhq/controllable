@@ -8,6 +8,8 @@ import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.Property;
 import one.superstack.controllable.model.PropertyValue;
 import one.superstack.controllable.model.PropertyValueLog;
+import one.superstack.controllable.pojo.PropertyActor;
+import one.superstack.controllable.pojo.PropertyValueReference;
 import one.superstack.controllable.repository.PropertyValueRepository;
 import one.superstack.controllable.request.PropertyValueCreationRequest;
 import one.superstack.controllable.request.PropertyValueDeletionRequest;
@@ -15,13 +17,19 @@ import one.superstack.controllable.request.PropertyValueFetchRequest;
 import one.superstack.controllable.request.PropertyValueUpdateRequest;
 import one.superstack.controllable.util.ActorUtil;
 import one.superstack.controllable.util.DataTypeValidator;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @Service
@@ -35,12 +43,15 @@ public class PropertyValueService {
 
     private final EnvironmentService environmentService;
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public PropertyValueService(PropertyValueRepository propertyValueRepository, PropertyService propertyService, PropertyValueLogService propertyValueLogService, EnvironmentService environmentService) {
+    public PropertyValueService(PropertyValueRepository propertyValueRepository, PropertyService propertyService, PropertyValueLogService propertyValueLogService, EnvironmentService environmentService, MongoTemplate mongoTemplate) {
         this.propertyValueRepository = propertyValueRepository;
         this.propertyService = propertyService;
         this.propertyValueLogService = propertyValueLogService;
         this.environmentService = environmentService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public PropertyValue create(String propertyId, String environmentId, PropertyValueCreationRequest propertyValueCreationRequest, AuthenticatedActor creator) throws Throwable {
@@ -101,6 +112,22 @@ public class PropertyValueService {
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Property value not found"));
     }
 
+    public List<PropertyValue> get(Set<PropertyValueReference> propertyValueReferences) {
+        Criteria criteria = new Criteria();
+
+        List<Criteria> propertyValueReferenceCriteriaList = new ArrayList<>();
+
+        for (PropertyValueReference propertyValueReference : propertyValueReferences) {
+            propertyValueReferenceCriteriaList.add(Criteria
+                    .where("_id").is(new ObjectId(propertyValueReference.getId()))
+                    .and("propertyId").is(propertyValueReference.getPropertyId())
+                    .and("environmentId").is(propertyValueReference.getEnvironmentId()));
+        }
+
+        criteria.orOperator(propertyValueReferenceCriteriaList);
+        return mongoTemplate.find(Query.query(criteria), PropertyValue.class);
+    }
+
     public PropertyValue update(String propertyValueId, String propertyId, String environmentId, PropertyValueUpdateRequest propertyValueUpdateRequest, AuthenticatedActor actor) throws Throwable {
         PropertyValue propertyValue = get(propertyValueId, propertyId, environmentId, actor.getOrganizationId());
         Property property = propertyService.get(propertyId, actor.getOrganizationId());
@@ -149,5 +176,15 @@ public class PropertyValueService {
                 actor.getId()));
 
         return propertyValue;
+    }
+
+    public List<PropertyValue> delete(Set<PropertyValueReference> propertyValueReferences, PropertyActor actor) {
+        return delete(get(propertyValueReferences), actor);
+    }
+
+    public List<PropertyValue> delete(List<PropertyValue> values, PropertyActor actor) {
+        propertyValueRepository.deleteAll(values);
+        propertyValueLogService.logDeletes(values, actor);
+        return values;
     }
 }

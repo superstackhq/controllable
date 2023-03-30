@@ -117,7 +117,7 @@ public class PropertyService {
         return propertyRepository.findByIdIn(propertyIds);
     }
 
-    public List<Property> getByReferences(Set<PropertyReference> propertyReferences, String organizationId) {
+    public List<Property> get(Set<PropertyReference> propertyReferences, String organizationId) {
         List<Criteria> propertyReferenceCriteriaList = new ArrayList<>();
 
         for (PropertyReference propertyReference : propertyReferences) {

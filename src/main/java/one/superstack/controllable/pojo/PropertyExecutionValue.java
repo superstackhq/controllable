@@ -2,6 +2,8 @@ package one.superstack.controllable.pojo;
 
 import one.superstack.controllable.embedded.Rule;
 import one.superstack.controllable.embedded.Segment;
+import one.superstack.controllable.model.PropertyValue;
+import one.superstack.controllable.response.PropertyExecutionResponse;
 
 import java.io.Serializable;
 
@@ -17,6 +19,13 @@ public class PropertyExecutionValue implements Serializable {
 
     public PropertyExecutionValue() {
 
+    }
+
+    public PropertyExecutionValue(PropertyValue value) {
+        this.id = value.getId();
+        this.data = value.getValue();
+        this.rule = value.getRule();
+        this.segment = value.getSegment();
     }
 
     public PropertyExecutionValue(String id, Object data, Rule rule, Segment segment) {

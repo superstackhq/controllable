@@ -3,6 +3,7 @@ package one.superstack.controllable.model;
 import one.superstack.controllable.embedded.Rule;
 import one.superstack.controllable.embedded.Segment;
 import one.superstack.controllable.enums.PropertyActorType;
+import one.superstack.controllable.pojo.PropertyValueReference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -143,5 +144,9 @@ public class PropertyValue implements Serializable {
 
     public void setModifiedOn(Date modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public PropertyValueReference toReference() {
+        return new PropertyValueReference(id, propertyId, environmentId);
     }
 }
