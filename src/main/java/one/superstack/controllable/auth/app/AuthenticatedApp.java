@@ -1,5 +1,9 @@
 package one.superstack.controllable.auth.app;
 
+import one.superstack.controllable.enums.PropertyActorType;
+import one.superstack.controllable.model.AppAccess;
+import one.superstack.controllable.pojo.PropertyActor;
+
 import java.io.Serializable;
 
 public class AuthenticatedApp implements Serializable {
@@ -31,5 +35,9 @@ public class AuthenticatedApp implements Serializable {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public PropertyActor toPropertyActor() {
+        return new PropertyActor(PropertyActorType.APP, id, null);
     }
 }

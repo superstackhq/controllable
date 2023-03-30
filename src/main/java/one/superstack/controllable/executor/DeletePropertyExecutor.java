@@ -43,7 +43,7 @@ public class DeletePropertyExecutor implements PropertyExecutor {
         }
 
         // Delete the property value references
-        PropertyActor propertyActor = new PropertyActor(PropertyActorType.APP, app.getId(), null);
+        PropertyActor propertyActor = app.toPropertyActor();
         List<PropertyValue> deletedPropertyValues = propertyValueService.delete(propertyValueReferences, propertyActor);
         Map<PropertyValueReference, PropertyValue> deletedPropertyValueMap = deletedPropertyValues.stream().collect(Collectors.toMap(PropertyValue::toReference, deletedPropertyValue -> deletedPropertyValue, (a, b) -> b));
 

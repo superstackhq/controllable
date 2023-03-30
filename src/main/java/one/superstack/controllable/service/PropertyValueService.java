@@ -5,10 +5,12 @@ import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.ChangeType;
 import one.superstack.controllable.exception.ClientException;
 import one.superstack.controllable.exception.NotFoundException;
+import one.superstack.controllable.model.Environment;
 import one.superstack.controllable.model.Property;
 import one.superstack.controllable.model.PropertyValue;
 import one.superstack.controllable.model.PropertyValueLog;
 import one.superstack.controllable.pojo.PropertyActor;
+import one.superstack.controllable.pojo.PropertyValueCreationExecutionRequest;
 import one.superstack.controllable.pojo.PropertyValueReference;
 import one.superstack.controllable.repository.PropertyValueRepository;
 import one.superstack.controllable.request.PropertyValueCreationRequest;
@@ -54,6 +56,40 @@ public class PropertyValueService {
         this.mongoTemplate = mongoTemplate;
     }
 
+    public List<PropertyValue> create(List<PropertyValueCreationExecutionRequest> propertyValueCreationExecutionRequests, Environment environment, PropertyActor actor) {
+        List<PropertyValue> propertyValues = new ArrayList<>();
+
+        // Create the property values
+        for (PropertyValueCreationExecutionRequest propertyValueCreationExecutionRequest : propertyValueCreationExecutionRequests) {
+            Property property = propertyValueCreationExecutionRequest.getProperty();
+            PropertyValue propertyValue = validateAndCreateInstance(property, propertyValueCreationExecutionRequest.getValue(), environment.getId(), actor);
+            propertyValues.add(propertyValue);
+        }
+
+        propertyValues = propertyValueRepository.saveAll(propertyValues);
+
+        // Log property value creation
+        List<PropertyValueLog> logs = new ArrayList<>();
+
+        for (PropertyValue propertyValue : propertyValues) {
+            logs.add(new PropertyValueLog(ChangeType.CREATE,
+                    null,
+                    propertyValue.getId(),
+                    propertyValue.getPropertyId(),
+                    propertyValue.getEnvironmentId(),
+                    propertyValue.getSegment(),
+                    propertyValue.getRule(),
+                    propertyValue.getValue(),
+                    propertyValue.getOrganizationId(),
+                    propertyValue.getCreatorType(),
+                    propertyValue.getCreatorId()));
+        }
+
+        propertyValueLogService.asyncLog(logs);
+
+        return propertyValues;
+    }
+
     public PropertyValue create(String propertyId, String environmentId, PropertyValueCreationRequest propertyValueCreationRequest, AuthenticatedActor creator) throws Throwable {
         Property property = propertyService.get(propertyId, creator.getOrganizationId());
 
@@ -61,27 +97,7 @@ public class PropertyValueService {
             throw new NotFoundException("Environment not found");
         }
 
-        if (!DataTypeValidator.validate(property.getDataType(), propertyValueCreationRequest.getValue())) {
-            throw new ClientException("Invalid property value data type");
-        }
-
-        if (null != property.getConstraints()) {
-            property.getConstraints().validate(propertyValueCreationRequest.getValue(), property.getDataType());
-        }
-
-        if (null != property.getSegmentTreeStructure()) {
-            propertyValueCreationRequest.setSegment(property.getSegmentTreeStructure().validateSegment(propertyValueCreationRequest.getSegment()));
-        }
-
-        PropertyValue propertyValue = new PropertyValue(propertyId,
-                environmentId,
-                propertyValueCreationRequest.getValue(),
-                propertyValueCreationRequest.getSegment(),
-                propertyValueCreationRequest.getRule(),
-                creator.getOrganizationId(),
-                ActorUtil.convert(creator.getType()),
-                creator.getId());
-
+        PropertyValue propertyValue = validateAndCreateInstance(property, propertyValueCreationRequest, environmentId, PropertyActor.fromAuthenticatedActor(creator));
         propertyValue = propertyValueRepository.save(propertyValue);
 
         propertyValueLogService.asyncLog(new PropertyValueLog(ChangeType.CREATE,
@@ -97,6 +113,29 @@ public class PropertyValueService {
                 propertyValue.getCreatorId()));
 
         return propertyValue;
+    }
+
+    private PropertyValue validateAndCreateInstance(Property property, PropertyValueCreationRequest propertyValueCreationRequest, String environmentId, PropertyActor creator) {
+        if (!DataTypeValidator.validate(property.getDataType(), propertyValueCreationRequest.getValue())) {
+            throw new ClientException("Invalid property value data type");
+        }
+
+        if (null != property.getConstraints()) {
+            property.getConstraints().validate(propertyValueCreationRequest.getValue(), property.getDataType());
+        }
+
+        if (null != property.getSegmentTreeStructure()) {
+            propertyValueCreationRequest.setSegment(property.getSegmentTreeStructure().validateSegment(propertyValueCreationRequest.getSegment()));
+        }
+
+        return new PropertyValue(property.getId(),
+                environmentId,
+                propertyValueCreationRequest.getValue(),
+                propertyValueCreationRequest.getSegment(),
+                propertyValueCreationRequest.getRule(),
+                property.getOrganizationId(),
+                creator.getType(),
+                creator.getReferenceId());
     }
 
     public List<PropertyValue> listAll(String propertyId, String environmentId, String organizationId, Pageable pageable) {

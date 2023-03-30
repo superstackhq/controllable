@@ -27,6 +27,10 @@ public class PropertyCreationRequest implements Serializable {
 
     private Constraints constraints;
 
+    public PropertyCreationRequest() {
+
+    }
+
     public PropertyCreationRequest(List<String> namespace, String key, String version, String description, DataType dataType, SegmentTreeStructure segmentTreeStructure, Constraints constraints) {
         this.namespace = namespace;
         this.key = key;

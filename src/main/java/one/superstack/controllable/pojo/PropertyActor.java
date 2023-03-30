@@ -1,6 +1,8 @@
 package one.superstack.controllable.pojo;
 
+import one.superstack.controllable.auth.actor.AuthenticatedActor;
 import one.superstack.controllable.enums.PropertyActorType;
+import one.superstack.controllable.util.ActorUtil;
 
 import java.io.Serializable;
 
@@ -20,6 +22,10 @@ public class PropertyActor implements Serializable {
         this.type = type;
         this.referenceId = referenceId;
         this.data = data;
+    }
+
+    public static PropertyActor fromAuthenticatedActor(AuthenticatedActor actor) {
+        return new PropertyActor(ActorUtil.convert(actor.getType()), actor.getId(), null);
     }
 
     public PropertyActorType getType() {

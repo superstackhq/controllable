@@ -35,6 +35,11 @@ public class PropertyValueLogService {
         this.propertyActorService = propertyActorService;
     }
 
+    @Async
+    public void asyncLog(List<PropertyValueLog> logs) {
+        log(logs);
+    }
+
     public void log(List<PropertyValueLog> logs) {
         propertyValueLogRepository.saveAll(logs);
     }
