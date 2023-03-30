@@ -13,6 +13,8 @@ public interface EnvironmentRepository extends MongoRepository<Environment, Stri
 
     Optional<Environment> findByIdAndOrganizationId(String id, String organizationId);
 
+    Optional<Environment> findByNameAndOrganizationId(String name, String organizationId);
+
     List<Environment> findByOrganizationId(String organizationId, Pageable pageable);
 
     List<Environment> findByIdIn(List<String> ids);

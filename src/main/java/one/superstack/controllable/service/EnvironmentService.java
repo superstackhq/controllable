@@ -75,6 +75,11 @@ public class EnvironmentService {
                 .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Environment not found"));
     }
 
+    public Environment getByName(String name, String organizationId) throws Throwable {
+        return environmentRepository.findByNameAndOrganizationId(name, organizationId)
+                .orElseThrow((Supplier<Throwable>) () -> new NotFoundException("Environment " + name + " not found"));
+    }
+
     public Environment update(String environmentId, EnvironmentUpdateRequest environmentUpdateRequest, String organizationId) throws Throwable {
         Environment environment = get(environmentId, organizationId);
 

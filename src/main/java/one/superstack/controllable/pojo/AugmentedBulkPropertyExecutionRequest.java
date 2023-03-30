@@ -5,8 +5,9 @@ import one.superstack.controllable.model.Environment;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
-public class BulkAugmentedPropertyExecutionRequest implements Serializable {
+public class AugmentedBulkPropertyExecutionRequest implements Serializable {
 
     private ExecutionOperation operation;
 
@@ -14,14 +15,17 @@ public class BulkAugmentedPropertyExecutionRequest implements Serializable {
 
     private List<AugmentedPropertyExecutionRequest> requests;
 
-    public BulkAugmentedPropertyExecutionRequest() {
+    private Set<String> propertyIds;
+
+    public AugmentedBulkPropertyExecutionRequest() {
 
     }
 
-    public BulkAugmentedPropertyExecutionRequest(ExecutionOperation operation, Environment environment, List<AugmentedPropertyExecutionRequest> requests) {
+    public AugmentedBulkPropertyExecutionRequest(ExecutionOperation operation, Environment environment, List<AugmentedPropertyExecutionRequest> requests, Set<String> propertyIds) {
         this.operation = operation;
         this.environment = environment;
         this.requests = requests;
+        this.propertyIds = propertyIds;
     }
 
     public ExecutionOperation getOperation() {
@@ -46,5 +50,13 @@ public class BulkAugmentedPropertyExecutionRequest implements Serializable {
 
     public void setRequests(List<AugmentedPropertyExecutionRequest> requests) {
         this.requests = requests;
+    }
+
+    public Set<String> getPropertyIds() {
+        return propertyIds;
+    }
+
+    public void setPropertyIds(Set<String> propertyIds) {
+        this.propertyIds = propertyIds;
     }
 }

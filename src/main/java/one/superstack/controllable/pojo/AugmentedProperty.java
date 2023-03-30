@@ -8,14 +8,30 @@ public class AugmentedProperty implements Serializable {
 
     private PropertyReference reference;
 
-    private String referenceString;
-
     private Property property;
 
+    public AugmentedProperty() {
 
-    public AugmentedProperty(PropertyReference reference, String referenceString, Property property) {
+    }
+
+    public AugmentedProperty(PropertyReference reference, Property property) {
         this.reference = reference;
-        this.referenceString = referenceString;
+        this.property = property;
+    }
+
+    public PropertyReference getReference() {
+        return reference;
+    }
+
+    public void setReference(PropertyReference reference) {
+        this.reference = reference;
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    public void setProperty(Property property) {
         this.property = property;
     }
 }

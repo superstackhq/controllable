@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CollectionMemberService {
@@ -99,5 +100,9 @@ public class CollectionMemberService {
 
     public List<CollectionMember> listCollections(Affordance affordance) {
         return collectionMemberRepository.findByAffordanceTypeAndAffordanceId(affordance.getType(), affordance.getReferenceId());
+    }
+
+    public List<CollectionMember> listCollections(AffordanceType affordanceType, Set<String> affordanceIds) {
+        return collectionMemberRepository.findByAffordanceTypeAndAffordanceIdIn(affordanceType, affordanceIds);
     }
 }

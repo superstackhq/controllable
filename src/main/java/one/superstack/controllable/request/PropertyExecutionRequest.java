@@ -6,7 +6,6 @@ import one.superstack.controllable.pojo.PropertyReference;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Objects;
 
 public class PropertyExecutionRequest implements Serializable {
 
@@ -15,13 +14,13 @@ public class PropertyExecutionRequest implements Serializable {
 
     private PropertyExecutionValue value;
 
-    private Map<String, Objects> params;
+    private Map<String, Object> params;
 
     public PropertyExecutionRequest() {
 
     }
 
-    public PropertyExecutionRequest(PropertyReference property, PropertyExecutionValue value, Map<String, Objects> params) {
+    public PropertyExecutionRequest(PropertyReference property, PropertyExecutionValue value, Map<String, Object> params) {
         this.property = property;
         this.value = value;
         this.params = params;
@@ -43,11 +42,11 @@ public class PropertyExecutionRequest implements Serializable {
         this.value = value;
     }
 
-    public Map<String, Objects> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, Objects> params) {
+    public void setParams(Map<String, Object> params) {
         this.params = params;
     }
 }

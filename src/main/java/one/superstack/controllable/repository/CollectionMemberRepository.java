@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface CollectionMemberRepository extends MongoRepository<CollectionMember, String> {
@@ -16,4 +17,6 @@ public interface CollectionMemberRepository extends MongoRepository<CollectionMe
     List<CollectionMember> findByAffordanceTypeAndAffordanceIdAndOrganizationId(AffordanceType affordanceType, String affordanceId, String organizationId, Pageable pageable);
 
     List<CollectionMember> findByAffordanceTypeAndAffordanceId(AffordanceType affordanceType, String affordanceId);
+
+    List<CollectionMember> findByAffordanceTypeAndAffordanceIdIn(AffordanceType affordanceType, Set<String> affordanceIds);
 }

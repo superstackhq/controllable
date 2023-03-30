@@ -23,7 +23,7 @@ public class PropertyExecutionController extends AuthenticatedAppController {
     }
 
     @PostMapping(value = "/properties/execute")
-    public BulkPropertyExecutionResponse execute(@Valid @RequestBody BulkPropertyExecutionRequest request) {
+    public BulkPropertyExecutionResponse execute(@Valid @RequestBody BulkPropertyExecutionRequest request) throws Throwable {
         return propertyExecutionService.execute(request, getApp());
     }
 }

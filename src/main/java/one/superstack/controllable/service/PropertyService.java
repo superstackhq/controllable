@@ -6,16 +6,22 @@ import one.superstack.controllable.enums.TargetType;
 import one.superstack.controllable.exception.ClientException;
 import one.superstack.controllable.exception.NotFoundException;
 import one.superstack.controllable.model.Property;
+import one.superstack.controllable.pojo.PropertyReference;
 import one.superstack.controllable.repository.PropertyRepository;
 import one.superstack.controllable.request.AccessRequest;
 import one.superstack.controllable.request.PropertyCreationRequest;
 import one.superstack.controllable.request.PropertyFetchRequest;
 import one.superstack.controllable.request.PropertyUpdateRequest;
+import one.superstack.controllable.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -35,13 +41,16 @@ public class PropertyService {
 
     private final PropertyValueGCService propertyValueGCService;
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService, AppAccessGCService appAccessGCService, PropertyValueGCService propertyValueGCService) {
+    public PropertyService(PropertyRepository propertyRepository, AccessService accessService, NamespaceService namespaceService, AppAccessGCService appAccessGCService, PropertyValueGCService propertyValueGCService, MongoTemplate mongoTemplate) {
         this.propertyRepository = propertyRepository;
         this.accessService = accessService;
         this.namespaceService = namespaceService;
         this.appAccessGCService = appAccessGCService;
         this.propertyValueGCService = propertyValueGCService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public Property create(PropertyCreationRequest propertyCreationRequest, AuthenticatedActor creator) {
@@ -49,12 +58,18 @@ public class PropertyService {
             propertyCreationRequest.setNamespace(null);
         }
 
-        if (null != propertyCreationRequest.getNamespace()) {
-            namespaceService.register(propertyCreationRequest.getNamespace(), creator.getOrganizationId());
+        if (null != propertyCreationRequest.getVersion() && propertyCreationRequest.getVersion().isBlank()) {
+            propertyCreationRequest.setVersion(null);
         }
+
+        validatePropertyCreationRequest(propertyCreationRequest);
 
         if (keyVersionExists(propertyCreationRequest.getNamespace(), propertyCreationRequest.getKey(), propertyCreationRequest.getVersion(), creator.getOrganizationId())) {
             throw new ClientException("Property " + propertyCreationRequest.getKey() + " with version " + propertyCreationRequest.getVersion() + " already exists in this namespace");
+        }
+
+        if (null != propertyCreationRequest.getNamespace()) {
+            namespaceService.register(propertyCreationRequest.getNamespace(), creator.getOrganizationId());
         }
 
         Property property = new Property(propertyCreationRequest.getNamespace(),
@@ -102,6 +117,20 @@ public class PropertyService {
         return propertyRepository.findByIdIn(propertyIds);
     }
 
+    public List<Property> getByReferences(Set<PropertyReference> propertyReferences, String organizationId) {
+        List<Criteria> propertyReferenceCriteriaList = new ArrayList<>();
+
+        for (PropertyReference propertyReference : propertyReferences) {
+            propertyReferenceCriteriaList.add(Criteria
+                    .where("namespace").is(propertyReference.getNamespace())
+                    .and("key").is(propertyReference.getKey())
+                    .and("version").is(propertyReference.getVersion()));
+        }
+
+        Criteria criteria = Criteria.where("organizationId").is(organizationId).orOperator(propertyReferenceCriteriaList);
+        return mongoTemplate.find(Query.query(criteria), Property.class);
+    }
+
     public Property update(String propertyId, PropertyUpdateRequest propertyUpdateRequest, String organizationId) throws Throwable {
         Property property = get(propertyId, organizationId);
         property.setDescription(propertyUpdateRequest.getDescription());
@@ -124,5 +153,25 @@ public class PropertyService {
 
     private Boolean keyVersionExists(List<String> namespace, String key, String version, String organizationId) {
         return propertyRepository.existsByNamespaceAndKeyAndVersionAndOrganizationId(namespace, key, version, organizationId);
+    }
+
+    private void validatePropertyCreationRequest(PropertyCreationRequest propertyCreationRequest) {
+        if (null != propertyCreationRequest.getNamespace() && !propertyCreationRequest.getNamespace().isEmpty()) {
+            for (String namespaceComponent : propertyCreationRequest.getNamespace()) {
+                if (!StringUtil.isAlphaNumeric(namespaceComponent)) {
+                    throw new ClientException("Namespace contains non alpha numeric characters");
+                }
+            }
+        }
+
+        if (!StringUtil.isAlphaNumeric(propertyCreationRequest.getKey())) {
+            throw new ClientException("Property key contains non alpha numeric characters");
+        }
+
+        if (null != propertyCreationRequest.getVersion() && !propertyCreationRequest.getVersion().isBlank()) {
+            if (!StringUtil.isAlphaNumeric(propertyCreationRequest.getVersion())) {
+                throw new ClientException("Property version contains non alpha numeric characters");
+            }
+        }
     }
 }
