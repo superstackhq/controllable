@@ -43,9 +43,9 @@ public class UpdatePropertyExecutor implements PropertyExecutor {
                         request.getEnvironment(),
                         propertyValueUpdateRequest,
                         app.toPropertyActor());
-                propertyExecutionResponses.add(new PropertyExecutionResponse(true, new PropertyExecutionValue(propertyValue)));
+                propertyExecutionResponses.add(new PropertyExecutionResponse(true, null, new PropertyExecutionValue(propertyValue)));
             } catch (Throwable e) {
-                propertyExecutionResponses.add(new PropertyExecutionResponse(false, null));
+                propertyExecutionResponses.add(new PropertyExecutionResponse(false, e.getMessage(), null));
             }
         }
 

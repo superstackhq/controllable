@@ -157,7 +157,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
             if (null == rootNode) {
                 // If root node does not exist for the property, abort search
-                propertyExecutionResponses.add(new PropertyExecutionResponse(true, null));
+                propertyExecutionResponses.add(new PropertyExecutionResponse(true, "segment tree root not found", null));
             } else {
                 // Evaluate the tree starting from the root node for the property
                 propertyExecutionResponses.add(evaluateTree(augmentedPropertyExecutionRequest, rootNode));
@@ -181,7 +181,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
                 // No children - abort search
                 if (children.isEmpty()) {
-                    return new PropertyExecutionResponse(true, null);
+                    return new PropertyExecutionResponse(true, "no children found for segment during segment tree traversal", null);
                 }
 
                 // Find the segment component in the children to determine next node
@@ -200,7 +200,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
                     // If default segment child does not exist as well - abort search
                     if (null == nextNode) {
-                        return new PropertyExecutionResponse(true, null);
+                        return new PropertyExecutionResponse(true, "no property value found against segment and default segment", null);
                     }
                 }
 
@@ -214,7 +214,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
         if (null == eligiblePropertyValues || eligiblePropertyValues.isEmpty()) {
             // If eligible values list is empty - abort
-            return new PropertyExecutionResponse(true, null);
+            return new PropertyExecutionResponse(true, "no property values found before rule filtering", null);
         }
 
         try {
@@ -223,14 +223,14 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
             if (null == filteredValue) {
                 // If no rules passed - abort
-                return new PropertyExecutionResponse(true, null);
+                return new PropertyExecutionResponse(true, "no rules passed", null);
             }
 
             // We have a hit!
-            return new PropertyExecutionResponse(true, new PropertyExecutionValue(filteredValue));
+            return new PropertyExecutionResponse(true, null, new PropertyExecutionValue(filteredValue));
         } catch (Throwable e) {
             // It was really a system failure
-            return new PropertyExecutionResponse(false, null);
+            return new PropertyExecutionResponse(false, e.getMessage(), null);
         }
     }
 

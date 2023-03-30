@@ -64,7 +64,7 @@ public class DeletePropertyExecutor implements PropertyExecutor {
                 value = new PropertyExecutionValue(deletedPropertyValue);
             }
 
-            propertyExecutionResponses.add(new PropertyExecutionResponse(success, value));
+            propertyExecutionResponses.add(new PropertyExecutionResponse(success, null, value));
         }
 
         response.setResponses(propertyExecutionResponses);
