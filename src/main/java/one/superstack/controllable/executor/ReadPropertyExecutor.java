@@ -4,12 +4,10 @@ import one.superstack.controllable.auth.app.AuthenticatedApp;
 import one.superstack.controllable.embedded.Segment;
 import one.superstack.controllable.embedded.SegmentPathComponent;
 import one.superstack.controllable.embedded.SegmentTreeLevel;
+import one.superstack.controllable.embedded.SegmentTreeStructure;
 import one.superstack.controllable.model.Property;
 import one.superstack.controllable.model.PropertyValue;
-import one.superstack.controllable.pojo.AugmentedBulkPropertyExecutionRequest;
-import one.superstack.controllable.pojo.AugmentedPropertyExecutionRequest;
-import one.superstack.controllable.pojo.PropertyValueTreeNode;
-import one.superstack.controllable.pojo.PropertyValueTrees;
+import one.superstack.controllable.pojo.*;
 import one.superstack.controllable.response.BulkPropertyExecutionResponse;
 import one.superstack.controllable.response.PropertyExecutionResponse;
 import one.superstack.controllable.service.PropertyValueService;
@@ -150,13 +148,90 @@ public class ReadPropertyExecutor implements PropertyExecutor {
     }
 
     private BulkPropertyExecutionResponse evaluateTrees(AugmentedBulkPropertyExecutionRequest request, PropertyValueTrees valueTrees) {
-        // TODO
-        return null;
+        List<PropertyExecutionResponse> propertyExecutionResponses = new ArrayList<>();
+
+        for (AugmentedPropertyExecutionRequest augmentedPropertyExecutionRequest : request.getRequests()) {
+            String propertyId = augmentedPropertyExecutionRequest.getProperty().getProperty().getId();
+
+            PropertyValueTreeNode rootNode = valueTrees.getRoots().getOrDefault(propertyId, null);
+
+            if (null == rootNode) {
+                // If root node does not exist for the property, abort search
+                propertyExecutionResponses.add(new PropertyExecutionResponse(true, null));
+            } else {
+                // Evaluate the tree starting from the root node for the property
+                propertyExecutionResponses.add(evaluateTree(augmentedPropertyExecutionRequest, rootNode));
+            }
+        }
+
+        return new BulkPropertyExecutionResponse(propertyExecutionResponses);
     }
 
     private PropertyExecutionResponse evaluateTree(AugmentedPropertyExecutionRequest request, PropertyValueTreeNode root) {
-        // TODO
-        return null;
+        Map<String, Object> params = request.getParams();
+        SegmentTreeStructure segmentTreeStructure = request.getProperty().getProperty().getSegmentTreeStructure();
+
+        // Start with the root
+        PropertyValueTreeNode currentNode = root;
+
+        if (null != segmentTreeStructure && null != segmentTreeStructure.getLevels() && !segmentTreeStructure.getLevels().isEmpty()) {
+            // If segment tree exists, traverse the segment tree
+            for (SegmentTreeLevel segmentTreeLevel : segmentTreeStructure.getLevels()) {
+                Map<String, PropertyValueTreeNode> children = currentNode.getChildren();
+
+                // No children - abort search
+                if (children.isEmpty()) {
+                    return new PropertyExecutionResponse(true, null);
+                }
+
+                // Find the segment component in the children to determine next node
+                Object segmentPathComponentValue = params.getOrDefault(segmentTreeLevel.getName(), null);
+                String segmentPathComponentValueString = null;
+                if (null != segmentPathComponentValue) {
+                    segmentPathComponentValueString = segmentPathComponentValue.toString();
+                }
+
+                PropertyValueTreeNode nextNode = children.getOrDefault(segmentPathComponentValueString, null);
+
+                if (null == nextNode) {
+                    // If child node is not found, fallback to default segment
+
+                    nextNode = children.getOrDefault(PropertyValueService.DEFAULT_SEGMENT, null);
+
+                    // If default segment child does not exist as well - abort search
+                    if (null == nextNode) {
+                        return new PropertyExecutionResponse(true, null);
+                    }
+                }
+
+                // Set current node as next node
+                currentNode = nextNode;
+            }
+        }
+
+        // We reached the end of the segment tree path, let's look for eligible property values
+        List<PropertyValue> eligiblePropertyValues = currentNode.getValues();
+
+        if (null == eligiblePropertyValues || eligiblePropertyValues.isEmpty()) {
+            // If eligible values list is empty - abort
+            return new PropertyExecutionResponse(true, null);
+        }
+
+        try {
+            // Apply the rules and filter the property values
+            PropertyValue filteredValue = applyRules(eligiblePropertyValues, params);
+
+            if (null == filteredValue) {
+                // If no rules passed - abort
+                return new PropertyExecutionResponse(true, null);
+            }
+
+            // We have a hit!
+            return new PropertyExecutionResponse(true, new PropertyExecutionValue(filteredValue));
+        } catch (Throwable e) {
+            // It was really a system failure
+            return new PropertyExecutionResponse(false, null);
+        }
     }
 
     private PropertyValue applyRules(List<PropertyValue> propertyValues, Map<String, Object> params) throws ScriptException {
@@ -165,10 +240,12 @@ public class ReadPropertyExecutor implements PropertyExecutor {
 
         for (PropertyValue propertyValue : propertyValues) {
             if (null == propertyValue.getRule() || null == propertyValue.getRule().getExpression() || propertyValue.getRule().getExpression().isBlank()) {
+                // Rule-less property
                 if (null == valueWithEmptyRule) {
                     valueWithEmptyRule = propertyValue;
                 }
             } else {
+                // Evaluate the rule
                 Bindings bindings = scriptEngine.createBindings();
                 bindings.putAll(params);
                 Object result = scriptEngine.eval(propertyValue.getRule().getExpression(), bindings);
@@ -182,6 +259,7 @@ public class ReadPropertyExecutor implements PropertyExecutor {
             }
         }
 
+        // The one with the rule gets higher priority
         if (null != valueWithPassingRule) {
             return valueWithEmptyRule;
         }

@@ -130,12 +130,6 @@ public class PropertyValueService {
             propertyValueCreationRequest.setSegment(property.getSegmentTreeStructure().validateSegment(propertyValueCreationRequest.getSegment()));
         }
 
-        if (null != propertyValueCreationRequest.getSegment()) {
-            if (null == propertyValueCreationRequest.getSegment().getPath() || propertyValueCreationRequest.getSegment().getPath().isEmpty()) {
-                propertyValueCreationRequest.setSegment(null);
-            }
-        }
-
         return new PropertyValue(property.getId(),
                 environmentId,
                 propertyValueCreationRequest.getValue(),
