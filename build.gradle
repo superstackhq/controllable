@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group 'one.superstack'
+group 'one.superstack.controllable'
 version '1.0.0-alpha'
 
 repositories {
