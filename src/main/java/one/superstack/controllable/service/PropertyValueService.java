@@ -167,10 +167,18 @@ public class PropertyValueService {
         return mongoTemplate.find(Query.query(criteria), PropertyValue.class);
     }
 
+    public PropertyValue update(String propertyValueId, Property property, Environment environment, PropertyValueUpdateRequest propertyValueUpdateRequest, PropertyActor propertyActor) throws Throwable {
+        PropertyValue propertyValue = get(propertyValueId, property.getId(), environment.getId(), environment.getOrganizationId());
+        return update(property, propertyValue, propertyValueUpdateRequest, propertyActor);
+    }
+
     public PropertyValue update(String propertyValueId, String propertyId, String environmentId, PropertyValueUpdateRequest propertyValueUpdateRequest, AuthenticatedActor actor) throws Throwable {
         PropertyValue propertyValue = get(propertyValueId, propertyId, environmentId, actor.getOrganizationId());
         Property property = propertyService.get(propertyId, actor.getOrganizationId());
+        return update(property, propertyValue, propertyValueUpdateRequest, PropertyActor.fromAuthenticatedActor(actor));
+    }
 
+    private PropertyValue update(Property property, PropertyValue propertyValue, PropertyValueUpdateRequest propertyValueUpdateRequest, PropertyActor actor) {
         if (!DataTypeValidator.validate(property.getDataType(), propertyValueUpdateRequest.getValue())) {
             throw new ClientException("Invalid property value data type");
         }
@@ -192,8 +200,8 @@ public class PropertyValueService {
                 propertyValue.getRule(),
                 propertyValue.getValue(),
                 propertyValue.getOrganizationId(),
-                ActorUtil.convert(actor.getType()),
-                actor.getId()));
+                actor.getType(),
+                actor.getReferenceId()));
 
         return propertyValue;
     }

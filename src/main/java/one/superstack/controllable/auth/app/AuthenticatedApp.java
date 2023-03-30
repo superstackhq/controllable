@@ -1,7 +1,6 @@
 package one.superstack.controllable.auth.app;
 
 import one.superstack.controllable.enums.PropertyActorType;
-import one.superstack.controllable.model.AppAccess;
 import one.superstack.controllable.pojo.PropertyActor;
 
 import java.io.Serializable;

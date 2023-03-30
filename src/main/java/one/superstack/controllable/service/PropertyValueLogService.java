@@ -77,7 +77,7 @@ public class PropertyValueLogService {
 
 
     public void logDeletes(List<PropertyValue> propertyValues, AuthenticatedActor actor) {
-        logDeletes(propertyValues, new PropertyActor(ActorUtil.convert(actor.getType()), actor.getId(), null));
+        logDeletes(propertyValues, PropertyActor.fromAuthenticatedActor(actor));
     }
 
     public void logDeletes(List<PropertyValue> propertyValues, PropertyActor actor) {
