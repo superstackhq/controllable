@@ -107,13 +107,13 @@ public class AccessControlService {
         List<ActorReference> actorReferences = accesses.stream().map(access -> new ActorReference(access.getActorType(), access.getActorId())).collect(Collectors.toList());
         Map<ActorReference, Actor> actorMap = actorService.fetch(actorReferences).stream().collect(Collectors.toMap(actor -> new ActorReference(actor.getType(), actor.getReferenceId()), actor -> actor, (a, b) -> b));
 
-        List<AccessResponse> accessActorRespons = new ArrayList<>();
+        List<AccessResponse> accessActorResponses = new ArrayList<>();
 
         for (Access access : accesses) {
-            accessActorRespons.add(new AccessResponse(access, actorMap.get(new ActorReference(access.getActorType(), access.getActorId()))));
+            accessActorResponses.add(new AccessResponse(access, actorMap.get(new ActorReference(access.getActorType(), access.getActorId()))));
         }
 
-        return accessActorRespons;
+        return accessActorResponses;
     }
 
     public List<AccessResponse> get(TargetType targetType, String targetId, ActorType actorType, String actorId, String environmentId, String organizationId) throws Throwable {
