@@ -990,12 +990,10 @@ function PropertyApi() {
     this.listPropertiesAtNamespace = (namespace, page, size, success, error) => {
         $.ajax({
             type: "POST",
-            url: "/api/v1/properties/fetch",
+            url: "/api/v1/properties/fetch?page=" + page + "&size=" + size,
             headers: getHeaders(),
             data: JSON.stringify({
                 namespace: namespace,
-                page: page,
-                size: size
             }),
             dataType: "json",
             contentType: "application/json",
@@ -1082,12 +1080,10 @@ function PropertyValueApi() {
     this.listPropertyValues = (environmentId, propertyId, segment, page, size, success, error) => {
         $.ajax({
             type: "POST",
-            url: "/api/v1/environments/" + environmentId + "/properties/" + propertyId + "/values/fetch",
+            url: "/api/v1/environments/" + environmentId + "/properties/" + propertyId + "/values/fetch?page=" + page + "&size=" + size,
             headers: getHeaders(),
             data: JSON.stringify({
-                segment: segment,
-                page: page,
-                size: size
+                segment: segment
             }),
             dataType: "json",
             contentType: "application/json",
